@@ -1,0 +1,3082 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Good Life — Interactive Reader &amp; Classroom Companion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#0c0b09',
+            panel: '#15130f',
+            panelHover: '#1c1914',
+            borderWarm: '#26231d',
+            amberAccent: '#f59e0b',
+            amberDeep: '#d97706',
+            emeraldAccent: '#10b981',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #0c0b09;
+      color: #f5f2eb;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tracking-widest-plus {
+      letter-spacing: 0.14em;
+    }
+    .card-surface {
+      background-color: #15130f;
+      border: 1px solid #26231d;
+    }
+    .card-surface-interactive {
+      background-color: #15130f;
+      border: 1px solid #26231d;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-surface-interactive:hover {
+      background-color: #1c1914;
+      border-color: #443b2c;
+    }
+    .ruling-selected {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4), 0 12px 30px -10px rgba(245, 158, 11, 0.22);
+      background-color: #1a1711 !important;
+    }
+    .emerald-investigated {
+      border-color: rgba(16, 185, 129, 0.5) !important;
+      background-color: rgba(16, 185, 129, 0.07) !important;
+    }
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-reveal {
+      animation: fadeSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0c0b09;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #26231d;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f382d;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- TOP AUTHOR & BOOK BANNER -->
+  <header class="w-full border-b border-[#26231d] bg-[#110f0c]/95 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/35 flex items-center justify-center shrink-0 text-amber-400">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v18" />
+            <path d="M5 7h14" />
+            <path d="M5 7l-3 7h6l-3-7z" />
+            <path d="M19 7l-3 7h6l-3-7z" />
+            <path d="M8 21h8" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span class="font-bold text-sm sm:text-base text-[#f5f2eb] tracking-tight">
+              Anand S. Deshbhratar
+            </span>
+            <span class="text-xs text-[#6f675b]">•</span>
+            <span class="text-xs sm:text-sm font-medium text-amber-400">
+              Author, The Good Life (2026)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 self-start sm:self-center shrink-0">
+        <span class="px-2.5 py-1 rounded-md border border-amber-500/35 bg-amber-500/10 font-serif italic text-xs sm:text-sm font-semibold text-amber-300">
+          The Good Life: Plato, Aristotle, and Jesus in Conversation
+        </span>
+        <button id="toggleTextSizeBtn" onclick="toggleProjectorScale()" title="Toggle text scale for classroom projection"
+          class="px-2.5 py-1.5 rounded-lg border border-[#26231d] bg-[#15130f] hover:border-amber-500/40 text-[11px] font-mono uppercase tracking-wider text-[#a89f91] hover:text-amber-300 transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+          <span id="projectorLabel">Standard</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- INLINE RESET CONFIRMATION BAR -->
+  <div id="resetConfirmBar" class="hidden w-full border-b border-rose-500/40 bg-[#1a1010] px-4 py-2.5">
+    <div class="max-w-2xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <span class="font-mono text-rose-200" id="resetConfirmMsg">Reset current chapter’s 20T budget and rulings?</span>
+      <div class="flex items-center gap-2">
+        <button onclick="executeConfirmedReset()" class="px-3 py-1 rounded-md bg-rose-500 hover:bg-rose-400 text-obsidian font-mono font-bold uppercase tracking-wider">
+          Confirm Reset
+        </button>
+        <button onclick="cancelResetPrompt()" class="px-3 py-1 rounded-md border border-[#3a2a2a] text-[#d5cec2] hover:text-white font-mono uppercase tracking-wider">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden max-w-sm rounded-xl border border-emerald-500/45 bg-[#121a16] px-4 py-3 text-xs font-mono text-emerald-300 shadow-2xl animate-reveal">
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main id="appContainer" class="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-5 sm:py-7 transition-all duration-200">
+    <!-- Dynamic View Injected Here -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full border-t border-[#1e1b16] py-4 px-4 text-center text-[11px] text-[#787064] font-mono tracking-wider">
+    THE GOOD LIFE: PLATO, ARISTOTLE, AND JESUS IN CONVERSATION • ANAND S. DESHBHRATAR • AUTHOR, THE GOOD LIFE (2026)
+  </footer>
+
+  <script>
+    // =========================================================================
+    // 6 CHAPTERS × 3 CASES (18 CASES TOTAL)
+    // CASE 1: EVERYDAY PERSONAL LIFE (NON-SECTARIAN)
+    // CASE 2: CIVIC & WORKPLACE DILEMMA (NON-SECTARIAN)
+    // CASE 3: THE BOOK ENCOUNTER (PLATO, ARISTOTLE, AND JESUS)
+    // =========================================================================
+    const CHAPTERS = [
+      {
+        num: 1,
+        title: 'What Is the Good?',
+        subtitle: 'The Search for Truth, Happiness, and the Meaning of a Good Life',
+        icon: 'sun',
+        cases: [
+          {
+            tag: 'CASE 1 OF 3 • EVERYDAY PERSONAL LIFE',
+            title: 'The Quiet Reference Check',
+            context: 'Personal Integrity • Social Approval vs. Honest Friendship',
+            premise:
+              'A close friend asks you to serve as a personal reference for a competitive fellowship, urging you to gloss over a project he or she abandoned midway last year. Saying yes guarantees gratitude and keeps your social circle smooth; telling the full truth risks straining the friendship.',
+            hearClue:
+              'Your friend confides privately that he or she is terrified of disappointing family expectations of uninterrupted success—and has not yet owned up to why the earlier project stalled.',
+            searchClue:
+              'Genuine friendship wishes the other person’s true good rather than flattering his or her image. An apparent good (praise or effortless harmony) becomes destructive when purchased at the cost of truthfulness.',
+            rulings: {
+              A: {
+                title: 'Give a glowing endorsement and omit the abandoned project',
+                desc: 'Protect your friend’s immediate opportunity and preserve warmth in your circle without awkward questions.',
+                precedent: 'Loyalty to a friend’s reputation outweighs strict accuracy in private recommendations.',
+                scores: { justice: 1, mercy: 4, community: 2 },
+                reaction:
+                  'Your friend wins the fellowship and thanks you warmly, though he or she privately learns that cutting corners carries no consequence.',
+                reflection:
+                  'When approval replaces truth as the measure of loyalty, we help others protect an illusion rather than grow.'
+              },
+              B: {
+                title: 'Submit a harsh, unvarnished critique without telling your friend',
+                desc: 'Report the abandoned project directly to the committee to preserve your own reputation for strict objectivity.',
+                precedent: 'Personal integrity requires exposing another’s flaw regardless of relational care.',
+                scores: { justice: 4, mercy: 1, community: 1 },
+                reaction:
+                  'The committee thanks you for candour, while your friend feels ambushed and breaks off contact completely.',
+                reflection:
+                  'Truth spoken without care for the person often serves our own self-righteousness more than the good.'
+              },
+              C_HEAR: {
+                title: 'Have an honest conversation first; decline to falsify the record',
+                desc: 'Address your friend’s fear of family pressure directly, affirming his or her worth while explaining why you cannot omit the stalled project.',
+                precedent: 'True friendship honours a person’s dignity enough to speak the truth in love before acting.',
+                scores: { justice: 3, mercy: 4, community: 4 },
+                reaction:
+                  'The conversation stings at first, yet your friend admits the pressure felt and asks how to account for the gap honestly.',
+                reflection:
+                  'Listening beneath a person’s request reveals that what he or she needs most is courage, not a cover-up.'
+              },
+              C_SEARCH: {
+                title: 'Offer a balanced reference that pairs strengths with growth',
+                desc: 'Refuse to distort facts while framing the stalled project accurately alongside lessons your friend has genuinely learned.',
+                precedent: 'The good life refuses to trade truthfulness for short-term social applause.',
+                scores: { justice: 4, mercy: 3, community: 3 },
+                reaction:
+                  'The committee respects your balanced candour, and your friend stands on an honest foundation rather than a fragile lie.',
+                reflection:
+                  'Ordering social harmony beneath truth protects both your character and the integrity of your word.'
+              },
+              C_BOTH: {
+                title: 'Speak candidly with your friend & craft an honest, growth-centred reference',
+                desc: 'Integrate empathetic listening with truthfulness: talk through his or her fear of family expectations first, refuse to conceal the past gap, and write a fair reference highlighting real accountability.',
+                precedent: 'Authentic good never pits kindness against truth; it helps others flourish on honest ground.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Your friend owns his or her story openly during the interview—and your friendship deepens beyond surface approval.',
+                reflection:
+                  'Choosing what is genuinely good over what merely looks pleasant transforms both character and relationship.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 2 OF 3 • CIVIC & WORKPLACE DILEMMA',
+            title: 'The Civic Gala & The Scholarship Fund',
+            context: 'Civic Trust Governance • Public Prestige vs. Core Mission',
+            premise:
+              'As chair of a city educational trust, you hold funds pledged for first-generation student stipends. Major patrons press you to divert half the reserve into a prestigious annual gala to attract wealthy donors, warning they will withdraw future support if you refuse.',
+            hearClue:
+              'Two stipend students quietly share that without this term’s disbursement each will have to drop out to work full-time, while the lead patron admits he mainly wants his family name featured on the gala banner.',
+            searchClue:
+              'Ethical reasoning distinguishes intrinsic goods (human flourishing and truth) from instrumental goods (prestige and money). When an institution treats visibility and donor applause as its highest measure, the means quietly replaces the mission.',
+            rulings: {
+              A: {
+                title: 'Approve the gala and defer half the student stipends',
+                desc: 'Prioritize donor prestige and institutional visibility now, hoping future fundraising will compensate students later.',
+                precedent: 'Institutional prestige and donor approval outweigh immediate obligations to the vulnerable.',
+                scores: { justice: 1, mercy: 1, community: 2 },
+                reaction:
+                  'The gala draws glowing headlines across the city, while two promising students quietly withdraw from their studies before mid-term.',
+                reflection:
+                  'An institution can celebrate outward success while drifting from the very purpose that makes its work genuinely good.'
+              },
+              B: {
+                title: 'Refuse all external patronage and dissolve the donor board',
+                desc: 'Reject wealthy patrons altogether and fund the trust solely through small grassroots contributions.',
+                precedent: 'External wealth is inherently corrupting and must be excluded from civic endeavours.',
+                scores: { justice: 4, mercy: 3, community: 1 },
+                reaction:
+                  'Your uncompromising stand earns admiration from purists, yet the trust loses sustainable funding for next year’s incoming cohort.',
+                reflection:
+                  'Rejecting resources outright avoids compromise, but practical wisdom asks how resources can serve the good without governing it.'
+              },
+              C_HEAR: {
+                title: 'Protect full student stipends; decline vanity sponsorship',
+                desc: 'Place the students’ uninterrupted education first, refusing to trade their livelihood for a patron’s banner.',
+                precedent: 'Human dignity is never a currency to be spent on institutional applause.',
+                scores: { justice: 4, mercy: 5, community: 3 },
+                reaction:
+                  'The lead patron walks away offended, yet every student remains enrolled—and faculty respect your refusal to sacrifice people for publicity.',
+                reflection:
+                  'Listening to those who bear the silent cost exposes when “strategic compromise” is really disguised self-interest.'
+              },
+              C_SEARCH: {
+                title: 'Subordinate fundraising to the trust’s constitutive purpose',
+                desc: 'Establish a charter rule that donor events may never draw from student stipend reserves.',
+                precedent: 'Instrumental goods must remain strictly subordinate to the end they exist to serve.',
+                scores: { justice: 5, mercy: 3, community: 4 },
+                reaction:
+                  'Board members debate the charter boundary, ultimately agreeing that reputation cannot dictate core ethical commitments.',
+                reflection:
+                  'Clarity about what is genuinely good protects an institution from confusing popularity with purpose.'
+              },
+              C_BOTH: {
+                title: 'Disburse full stipends & bind patronage to mission integrity',
+                desc: 'Integrate student testimony with ethical clarity: disburse 100% of promised stipends, decline banner-driven vanity spending, and invite donors to fund a modest student-led showcase instead.',
+                precedent: 'The good life orders reputation and wealth beneath truth and human flourishing—never the reverse.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Several thoughtful patrons stay precisely because your integrity proves their contributions actually reach students rather than banquet halls.',
+                reflection:
+                  'When lesser goods are ordered beneath the true Good, both human dignity and authentic generosity flourish together.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 3 OF 3 • THE BOOK ENCOUNTER',
+            title: 'The Colonnade & The Young Heir',
+            context: 'Plato, Republic 508 • Aristotle, NE I.7 • Mark 10:17–22',
+            premise:
+              'In the eastern colonnade, a cloth merchant delivers short measure while officials look away to protect festival sponsors. Nearby, an earnest young heir kneels before Jesus asking what final deed secures eternal life—then walks away grieving when invited to release his wealth.',
+            hearClue:
+              'The supplier admits he shaved the cloth bolts to afford a festival gift for the officials, while the young heir whispers that without his fortune he would no longer know who he is.',
+            searchClue:
+              'Plato warns against mistaking wealth or public praise for the Form of the Good (Republic 508). Aristotle holds possessions as mere instruments for eudaimonia (NE I.7), while Jesus exposes the single attachment blocking discipleship (Mark 10:21).',
+            rulings: {
+              A: {
+                title: 'Honour festival sponsorship and rule-keeping respectability',
+                desc: 'Leave the donor’s short cloth unchallenged and commend the young heir’s commandment record without disturbing his estate.',
+                precedent: 'Outward respectability and completed rules suffice without surrendering what we love most.',
+                scores: { justice: 1, mercy: 2, community: 2 },
+                reaction:
+                  'The officials preserve festival harmony and the heir keeps his estate, yet the cheated buyer leaves believing fairness belongs only to the wealthy.',
+                voices: {
+                  plato: 'Plato: “He keeps his possessions, yet his soul remains ruled by appearances rather than the Good.”',
+                  aristotle: 'Aristotle: “External wealth has been preserved, though it governs him rather than serving virtue.”',
+                  jesus: 'Jesus: “An earnest question has been mistaken for a willingness to follow where truth leads.”'
+                }
+              },
+              B: {
+                title: 'Condemn all commercial wealth and possessions by decree',
+                desc: 'Declare private property inherently evil and order every merchant and heir to surrender all goods immediately.',
+                precedent: 'Material possessions are inherently evil and incompatible with a good life.',
+                scores: { justice: 3, mercy: 2, community: 1 },
+                reaction:
+                  'Chaos breaks out across the colonnade as honest craftsmen fear losing the tools by which they feed their households.',
+                voices: {
+                  plato: 'Plato: “You have blamed the material object rather than examining the disordered desires of the soul.”',
+                  aristotle: 'Aristotle: “Stripping households of necessary means undermines the practical conditions of flourishing.”',
+                  jesus: 'Jesus: “My call exposed what held this man captive; poverty alone is not the kingdom.”'
+                }
+              },
+              C_HEAR: {
+                title: 'Nullify the bribed cloth ruling & unmask identity-by-wealth',
+                desc: 'Enforce full cloth measure regardless of festival gifts and show the young heir that worth is not secured by fortune.',
+                precedent: 'The good life cannot be bought by patronage or measured by accumulated possessions.',
+                scores: { justice: 4, mercy: 4, community: 4 },
+                reaction:
+                  'Officials fall silent as fair measure is restored, and the young heir pauses at the gate—startled that someone saw past his wealth.',
+                voices: {
+                  plato: 'Plato: “Unmasking illusion frees reason to ask what is truly worthy of love.”',
+                  aristotle: 'Aristotle: “Interrupting self-deception opens the door to sound practical judgement.”',
+                  jesus: 'Jesus: “Naming what holds the heart captive is the threshold of turning.”'
+                }
+              },
+              C_SEARCH: {
+                title: 'Order possessions beneath the Good, Virtue & Kingdom',
+                desc: 'Rule with Plato, Aristotle, and Mark 10:21 that wealth is a subordinate tool—never the highest Good or a rival to God’s call.',
+                precedent: 'Every lesser good must be ordered beneath the highest Good and the call of God’s reign.',
+                scores: { justice: 4, mercy: 3, community: 4 },
+                reaction:
+                  'Scholars and merchants debate the ruling across the square while the young heir wrestles with what eternal life truly requires.',
+                voices: {
+                  plato: 'Plato: “When a means returns to its proper place, the soul can seek the Good itself.”',
+                  aristotle: 'Aristotle: “Wealth serves eudaimonia only when directed by virtue toward noble ends.”',
+                  jesus: 'Jesus: “Knowing the right order of goods still awaits the courage to step forward and follow.”'
+                }
+              },
+              C_BOTH: {
+                title: 'Restore honest measure & invite unencumbered discipleship',
+                desc: 'Integrate the hidden donor bias with Plato, Aristotle, and Mark 10:21: enforce honest weights regardless of patronage and invite the young heir to release what governs his identity.',
+                precedent: 'Admiring the good becomes living the good only when we release whatever rivals truth and God’s call.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Honest measure returns to the colonnade without favouritism, while the young heir lingers at the gate—his future left open between grief and freedom.',
+                voices: {
+                  plato: 'Plato: “The soul sees past the shadow of reputation toward what is genuinely good.”',
+                  aristotle: 'Aristotle: “Both civic fairness and personal discernment have been set in proper order.”',
+                  jesus: 'Jesus: “Look with love upon the one who struggles—and leave the door open to follow.”'
+                }
+              }
+            }
+          }
+        ],
+        mirrorPrompt: 'When truth or generosity threatens your comfort, status, or security, what excuse do you reach for first?',
+        mirrorOptions: [
+          'I frame keeping my advantage as “prudent stewardship” or realism.',
+          'I admire the moral ideal in principle while postponing costly action.',
+          'I examine what I am afraid of losing if I obey the truth.'
+        ],
+        authorNote:
+          'Dear {reader}, thank you for stepping into Chapter 1 with honesty. Noticing the gap between admiring the good and choosing it when it costs us something is the true starting point of ethical wisdom. Carry that curiosity with you as you read Chapter 2!',
+        autopsyReflection:
+          'Chapter 1 tests whether you measure a good life by visible applause and security, or by ordering lesser goods beneath truth and human flourishing.',
+        cliffhangerTitle: 'NEXT IN CHAPTER 2 • THE PERSON WE BECOME',
+        cliffhangerText:
+          'As the young heir disappears down the road, a celebrated benefactor named Damaris steps up to the courtyard fountain—praised on public tablets for his charity, yet hiding a broken promise to an injured worker...'
+      },
+
+      {
+        num: 2,
+        title: 'The Person We Become',
+        subtitle: 'Virtue, Desire, Character, and Moral Transformation',
+        icon: 'mirror',
+        cases: [
+          {
+            tag: 'CASE 1 OF 3 • EVERYDAY PERSONAL LIFE',
+            title: 'The Sharp Remark at the Family Table',
+            context: 'Habitual Character • Defensive Pride vs. Humble Repair',
+            premise:
+              'After a stressful week, you snap unfairly at a younger relative in front of family guests. Later that evening, you realize you were wrong—yet you have always prided yourself on being the calm, dependable helper everyone relies on.',
+            hearClue:
+              'Your relative admits privately that he or she hesitated to bring up a personal struggle afterward, fearing another sharp dismissal.',
+            searchClue:
+              'Character is not an account balance where past good deeds cancel a present wrong. True moral growth begins when we stop defending our self-image and name a mistake plainly.',
+            rulings: {
+              A: {
+                title: 'Move on smoothly and do an extra favour tomorrow',
+                desc: 'Avoid an awkward apology and rely on your track record of generosity to smooth things over quietly.',
+                precedent: 'Past kindness excuses a present wrong without needing to name it aloud.',
+                scores: { justice: 1, mercy: 2, community: 2 },
+                reaction:
+                  'Everyone acts polite the next day, yet an unspoken distance settles between you and your relative.',
+                reflection:
+                  'Using past good deeds to avoid saying “I was wrong” protects pride at the cost of genuine trust.'
+              },
+              B: {
+                title: 'Spiral into self-condemnation and withdraw from the gathering',
+                desc: 'Conclude that your impatience proves your helpfulness was fake all along, and pull back from family responsibilities.',
+                precedent: 'A single moral failure invalidates all previous good habits.',
+                scores: { justice: 2, mercy: 1, community: 1 },
+                reaction:
+                  'Your withdrawal leaves the household burdened and turns the focus onto your own wounded ego rather than your relative’s hurt.',
+                reflection:
+                  'Total despair is often the flip side of pride—both keep attention fixed on ourselves.'
+              },
+              C_HEAR: {
+                title: 'Apologize directly and invite your relative to share honestly',
+                desc: 'Acknowledge the sharp remark without excuses and create safe space for your relative to voice what he or she was trying to share.',
+                precedent: 'Humility names a wound plainly and restores space for the other person’s voice.',
+                scores: { justice: 3, mercy: 5, community: 4 },
+                reaction:
+                  'Your relative visibly relaxes and opens up about the struggle he or she had been carrying alone.',
+                reflection:
+                  'Listening without self-defence turns a moment of failure into a doorway of trust.'
+              },
+              C_SEARCH: {
+                title: 'Separate truthful confession from self-exoneration',
+                desc: 'Refuse to tally past favours as a shield; state clearly that your tone was unfair and commit to practising patience under stress.',
+                precedent: 'Moral transformation begins when we stop explaining why we are already good.',
+                scores: { justice: 4, mercy: 3, community: 4 },
+                reaction:
+                  'Naming the fault plainly frees you from defending an unblemished image and sets a healthier tone at home.',
+                reflection:
+                  'Truthful confession neither denies past good nor excuses present harm.'
+              },
+              C_BOTH: {
+                title: 'Confess plainly without excuses & reopen space to listen',
+                desc: 'Integrate empathetic listening with moral truthfulness: apologize directly for your impatience without citing past favours, and invite your relative to share freely.',
+                precedent: 'Genuine character grows through unguarded truth, humble repair, and patient re-habituation.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Trust is not rebuilt in a single sentence, yet your honesty breaks the cycle of defensiveness and begins a deeper habit of grace.',
+                reflection:
+                  'When we no longer need to appear flawless, we finally become free to love truthfully.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 2 OF 3 • CIVIC & WORKPLACE DILEMMA',
+            title: 'The Benevolent Director’s Late Overtime',
+            context: 'Workplace Integrity • Public Philanthropy vs. Private Justice',
+            premise:
+              'A respected community leader—celebrated for funding neighbourhood clinics—promised a contract courier extra pay for a risky late-night delivery. When a sudden storm damaged two parcels, the leader withheld the bonus, leaving the courier unable to cover clinic bills.',
+            hearClue:
+              'The courier strained his back shielding the cargo from floodwater, while the leader confides privately: “If I admit I owed him, people will think my charity work is a sham.”',
+            searchClue:
+              'Visible generosity can become a psychological shield against examining private unfairness. Real moral repair requires paying what is owed without using public praise to erase accountability.',
+            rulings: {
+              A: {
+                title: 'Deduct the storm damage and praise the leader’s charity record',
+                desc: 'Protect the leader’s public standing and treat the dispute as an unfortunate contract misunderstanding.',
+                precedent: 'A lifetime of public philanthropy outweighs a disputed private obligation.',
+                scores: { justice: 1, mercy: 1, community: 2 },
+                reaction:
+                  'The leader receives another civic award next month while the injured courier borrows at high interest to pay for treatment.',
+                reflection:
+                  'Good deeds in public never cancel an unpaid debt in private.'
+              },
+              B: {
+                title: 'Publicly denounce the leader’s entire philanthropic work as fraud',
+                desc: 'Expose the unpaid bonus at the awards ceremony and declare every clinic donation hypocritical.',
+                precedent: 'One moral contradiction proves a person’s entire life is worthless.',
+                scores: { justice: 3, mercy: 1, community: 1 },
+                reaction:
+                  'Humiliated before the town, the leader retreats into bitter self-justification and halts clinic funding.',
+                reflection:
+                  'Condemnation that erases all genuine good often hardens people against real change.'
+              },
+              C_HEAR: {
+                title: 'Pay the promised bonus and cover the courier’s medical care',
+                desc: 'Honour the courier’s sacrifice during the storm without making excuses about damaged parcels.',
+                precedent: 'Restitution responds first to the concrete injury suffered by the worker.',
+                scores: { justice: 4, mercy: 5, community: 3 },
+                reaction:
+                  'The courier receives treatment immediately, though he watches cautiously to see whether future contracts will truly change.',
+                reflection:
+                  'Repair begins when concrete relief reaches the person harmed.'
+              },
+              C_SEARCH: {
+                title: 'Separate past charity from present restitution',
+                desc: 'Require the leader to settle the debt quietly without citing charitable donations as an excuse or publicity piece.',
+                precedent: 'Moral integrity refuses to use philanthropy as a defence against justice.',
+                scores: { justice: 5, mercy: 3, community: 4 },
+                reaction:
+                  'Stripped of self-flattering explanations, the leader faces the contradiction between public generosity and private fairness.',
+                reflection:
+                  'Facing the truth without self-exoneration opens the door to genuine character reform.'
+              },
+              C_BOTH: {
+                title: 'Settle the debt with medical care & decline public self-praise',
+                desc: 'Integrate worker testimony with moral clarity: pay the promised bonus plus medical treatment, put written storm-protection terms in place, and ask that the leader’s next charity gift be recorded without personal praise.',
+                precedent: 'True turning names the wrong, repairs the harm, and surrenders control over one’s public image.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'The courier says quietly, “I will judge by what you do next”—and a real, unpretentious transformation begins.',
+                reflection:
+                  'Character is reshaped when restitution is joined to humility rather than reputation management.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 3 OF 3 • THE BOOK ENCOUNTER',
+            title: 'Damaris’s Ledger & The Two Men at Prayer',
+            context: 'Plato, Republic IV • Aristotle, NE II.1 • Luke 18:9–14',
+            premise:
+              'At the city fountain, wealthy benefactor Damaris defends withholding extra pay from an injured cart-unloader by citing his public donations. Nearby, Jesus tells of a disciplined Pharisee thanking God for his superiority while a tax collector begs simply for mercy.',
+            hearClue:
+              'Damaris’s wife tells him quietly: “You are afraid that if you admit one wrong, every good thing you have done will become meaningless.”',
+            searchClue:
+              'Plato warns of an inwardly disordered soul behind an admirable mask (Republic IV). Aristotle notes habits can serve pride unless guided by practical wisdom (NE II.1), while Luke 18:14 shows mercy belongs to those who stop defending their record.',
+            rulings: {
+              A: {
+                title: 'Weigh Damaris’s civic benefactions above one worker’s claim',
+                desc: 'Allow his long record of public generosity to outweigh the disputed delivery payment.',
+                precedent: 'Accumulated respectable deeds insulate a benefactor from private grievance.',
+                scores: { justice: 1, mercy: 1, community: 2 },
+                reaction:
+                  'Damaris walks away vindicated in his own eyes, using his charity list as a courtroom shield against his worker.',
+                voices: {
+                  plato: 'Plato: “He mistakes the outward appearance of order for a soul genuinely governed by justice.”',
+                  aristotle: 'Aristotle: “Habits of giving have been bent into instruments of reputation rather than virtue.”',
+                  jesus: 'Jesus: “He stands before God reciting his record, yet goes home unchanged.”'
+                }
+              },
+              B: {
+                title: 'Strip Damaris of public honours and declare his life a sham',
+                desc: 'Remove his name from the benefactor tablet and denounce his earlier gifts as empty vanity.',
+                precedent: 'Moral failure nullifies all prior acts of generosity.',
+                scores: { justice: 3, mercy: 1, community: 1 },
+                reaction:
+                  'Publicly shamed, Damaris insists he was misunderstood and refuses to speak with the injured worker’s family.',
+                voices: {
+                  plato: 'Plato: “Humiliation inflames pride rather than ordering reason over appetite.”',
+                  aristotle: 'Aristotle: “Destroying a person’s standing without a path of practice stalls moral growth.”',
+                  jesus: 'Jesus: “Contempt is the very disease the parable warns against—even when aimed at the proud.”'
+                }
+              },
+              C_HEAR: {
+                title: 'Free Damaris from all-or-nothing fear; pay the worker',
+                desc: 'Show Damaris that admitting this wrong does not erase his past good, and have him pay the promised wage plus treatment.',
+                precedent: 'Honest repentance admits a concrete wrong without despairing of all good.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'Damaris visits the physician’s house and pays the debt without speeches, telling the worker, “You will have to see what I do.”',
+                voices: {
+                  plato: 'Plato: “Truth begins to reorder the soul once fear of losing face loses its throne.”',
+                  aristotle: 'Aristotle: “A single truthful choice interrupts a self-protective habit.”',
+                  jesus: 'Jesus: “When a person stops defending himself, a new beginning becomes possible.”'
+                }
+              },
+              C_SEARCH: {
+                title: 'Confront comparison-righteousness with Luke 18:14',
+                desc: 'Expose how religious or civic discipline becomes a trap when used to feel superior to others, requiring restitution first.',
+                precedent: 'True transformation begins with asking for mercy rather than tallying superiority.',
+                scores: { justice: 4, mercy: 3, community: 4 },
+                reaction:
+                  'The crowd falls silent as the Pharisee’s prayer mirrors their own habit of using good deeds to excuse blind spots.',
+                voices: {
+                  plato: 'Plato: “Goodness that depends on looking down on others is a shadow, not the Good.”',
+                  aristotle: 'Aristotle: “Disciplined practice requires sound self-judgement to become genuine virtue.”',
+                  jesus: 'Jesus: “Those who exalt themselves are humbled; those who ask for mercy go home justified.”'
+                }
+              },
+              C_BOTH: {
+                title: 'Pay full restitution, rewrite worker contracts & refuse self-praise',
+                desc: 'Integrate his wife’s insight with Plato, Aristotle, and Luke 18:14: pay the worker’s wage and medical care, reform delivery contracts, and decline public praise at the relief ceremony.',
+                precedent: 'Grace releases us from defending an unblemished image so we can practise truthful repair.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Trust is not instant, yet Damaris stops citing his donations to silence criticism—and the city begins questioning what makes a person truly good.',
+                voices: {
+                  plato: 'Plato: “Reason sees clearly once reputation is no longer mistaken for the Good.”',
+                  aristotle: 'Aristotle: “Changed habits and fairer rules now reinforce each other over time.”',
+                  jesus: 'Jesus: “Repentance bears fruit when we stop explaining why we are already good.”'
+                }
+              }
+            }
+          }
+        ],
+        mirrorPrompt: 'What repeated habit in your life is quietly shaping the person you are becoming—and what good deed might you be using to excuse an unexamined blind spot?',
+        mirrorOptions: [
+          'I list the good things I have done to defend my intentions.',
+          'I feel overwhelmed by shame and withdraw from the person.',
+          'I name the specific wrong honestly and ask how to repair it.'
+        ],
+        authorNote:
+          'Dear {reader}, well done on completing Chapter 2. It takes real courage to examine how our habits and good reputations can sometimes shield us from honest self-examination. Keep that openness alive as you turn to Chapter 3!',
+        autopsyReflection:
+          'Chapter 2 exposes the difference between moral performance (building an impressive ledger of good deeds) and genuine transformation of habit and desire.',
+        cliffhangerTitle: 'NEXT IN CHAPTER 3 • WHO IS MY NEIGHBOUR?',
+        cliffhangerText:
+          'Damaris begins repairing his ledger—yet outside the eastern gate at dawn, an olive-oil trader named Eliab lies robbed and bleeding beside the road as three travellers approach...'
+      },
+
+      {
+        num: 3,
+        title: 'Who Is My Neighbour?',
+        subtitle: 'Justice, Compassion, Friendship, and the Stranger',
+        icon: 'road',
+        cases: [
+          {
+            tag: 'CASE 1 OF 3 • EVERYDAY PERSONAL LIFE',
+            title: 'The Stranded Commuter on the Outer Ring Road',
+            context: 'Everyday Compassion • Personal Schedule vs. Stranger’s Need',
+            premise:
+              'Driving home at dusk after a long workday, you spot a delivery rider pinned beneath an overturned scooter on a poorly lit service lane. Stopping means missing an important family dinner and risking roadside danger; dozens of cars are speeding past.',
+            hearClue:
+              'When you slow down, you see the rider’s phone is shattered and his ankle is bleeding—he cannot call anyone or move out of oncoming traffic on his own.',
+            searchClue:
+              'Compassion is tested not when helping is convenient, but when an unexpected stranger interrupts our plans. Prudent care sets safe hazard warnings rather than using caution as an excuse to drive away.',
+            rulings: {
+              A: {
+                title: 'Keep driving and assume emergency services will eventually pass',
+                desc: 'Avoid roadside risk and arrive on time for your family commitment, telling yourself professionals handle accidents.',
+                precedent: 'Personal safety and scheduled commitments excuse passing an injured stranger.',
+                scores: { justice: 1, mercy: 1, community: 1 },
+                reaction:
+                  'You arrive at dinner on time, though the image of the bleeding rider stays with you through the evening.',
+                reflection:
+                  'Treating another person’s emergency as “someone else’s job” narrows our moral world to our own schedule.'
+              },
+              B: {
+                title: 'Rush into dark traffic alone without hazard precautions',
+                desc: 'Stop abruptly in the fast lane without warning lights to lift the heavy scooter by yourself.',
+                precedent: 'Immediate impulse overrides prudent safety for both helper and victim.',
+                scores: { justice: 2, mercy: 4, community: 2 },
+                reaction:
+                  'You free the rider, though a swerving car nearly strikes you both in the unlit lane.',
+                reflection:
+                  'Genuine care pairs courageous compassion with practical wisdom so help does not multiply harm.'
+              },
+              C_HEAR: {
+                title: 'Pull over safely, stay with the rider & call an ambulance',
+                desc: 'Use your hazard lights to shield the lane, bind his bleeding ankle, and wait with him until medical help arrives.',
+                precedent: 'Seeing a stranger’s vulnerability turns a passer-by into a neighbour.',
+                scores: { justice: 3, mercy: 5, community: 4 },
+                reaction:
+                  'You arrive late to dinner, yet your family understands—and the rider’s panic subsides because he is no longer alone.',
+                reflection:
+                  'Neighbour-love begins the moment another person’s distress becomes more real to us than our timetable.'
+              },
+              C_SEARCH: {
+                title: 'Provide safe first aid & report the unlit blind spot to traffic authorities',
+                desc: 'Stabilize the scene safely and file a formal hazard report so future commuters do not face the same dark turn.',
+                precedent: 'Mercy responds to the person in front of us while justice addresses recurring danger.',
+                scores: { justice: 5, mercy: 3, community: 4 },
+                reaction:
+                  'Emergency responders arrive smoothly, and local ward engineers log the missing streetlight for repair.',
+                reflection:
+                  'Compassion and civic foresight reinforce each other when we refuse to treat preventable hazards as inevitable.'
+              },
+              C_BOTH: {
+                title: 'Shield the rider with hazard care, stay until handover & alert civic safety',
+                desc: 'Integrate immediate human presence with practical wisdom: park safely with hazard lights, stay with the injured rider until ambulance handover, and report the dark road hazard.',
+                precedent: 'True neighbourliness crosses the road with both warm presence and wise protection.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'The rider is treated safely, your family honours why you were delayed, and the dangerous curve receives warning reflectors.',
+                reflection:
+                  'Becoming a neighbour means letting interruption turn into wise, concrete care.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 2 OF 3 • CIVIC & WORKPLACE DILEMMA',
+            title: 'The Outsourced Sanitation Crew’s Clinic Access',
+            context: 'Institutional Belonging • Insider Boundaries vs. Shared Dignity',
+            premise:
+              'Your campus or company operates an on-site health clinic exclusively for full-time salaried staff. When a contracted night-shift cleaner suffers a chemical burn on duty, administrators note that contract workers fall outside the clinic’s insurance boundary.',
+            hearClue:
+              'The cleaner explains that the nearest public clinic is six kilometres away and he will lose three days of daily wages if he leaves campus to wait in line.',
+            searchClue:
+              'Defining who counts as a “member” often becomes a tidy way of limiting moral responsibility. Justice asks what institutions owe those whose daily labour sustains their common life.',
+            rulings: {
+              A: {
+                title: 'Enforce the salaried-only boundary and refer him off-site',
+                desc: 'Follow existing HR rules strictly so the clinic budget is reserved exclusively for permanent employees.',
+                precedent: 'Contractual categories define the outer boundary of institutional care.',
+                scores: { justice: 2, mercy: 1, community: 1 },
+                reaction:
+                  'Administrative budgets remain untouched, while the cleaner loses three days’ pay and works with an infected burn.',
+                reflection:
+                  'Rules designed for administrative convenience become unjust when they render vulnerable coworkers invisible.'
+              },
+              B: {
+                title: 'Pay for his private care out of pocket while leaving the rule intact',
+                desc: 'Quietly cover his external clinic fee yourself so no policy debate is triggered.',
+                precedent: 'Private generosity resolves individual distress without questioning institutional rules.',
+                scores: { justice: 2, mercy: 4, community: 2 },
+                reaction:
+                  'The cleaner is grateful for your kindness, yet the next injured contract worker faces the exact same locked clinic door.',
+                reflection:
+                  'Private charity relieves immediate pain, but without structural reform the same exclusion repeats tomorrow.'
+              },
+              C_HEAR: {
+                title: 'Treat the burn immediately & cover his lost shift wages',
+                desc: 'Refuse to turn away a worker injured on your premises; provide immediate care and protect his daily income.',
+                precedent: 'Urgent human need overrides administrative labels.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'The nurse treats the burn within minutes, and the cleaner returns to his family relieved and respected.',
+                reflection:
+                  'Attention to the person before us exposes the cruelty of hiding behind organizational categories.'
+              },
+              C_SEARCH: {
+                title: 'Amend campus policy to guarantee on-site emergency care for all workers',
+                desc: 'Establish a standing rule that anyone working on campus—salaried or contracted—receives immediate clinic treatment.',
+                precedent: 'A just community refuses to exclude those whose labour sustains its daily life.',
+                scores: { justice: 5, mercy: 3, community: 5 },
+                reaction:
+                  'Department heads adopt the emergency-care clause, aligning institutional policy with basic human dignity.',
+                reflection:
+                  'Institutions shape moral habit when they widen the circle of belonging.'
+              },
+              C_BOTH: {
+                title: 'Provide immediate clinic care & codify universal workplace coverage',
+                desc: 'Integrate the cleaner’s lived reality with institutional justice: treat his injury on-site today without wage loss, and amend vendor contracts to guarantee clinic access for all staff.',
+                precedent: 'Mercy crosses boundaries immediately; justice ensures those boundaries stay open tomorrow.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Both permanent faculty and contract workers see that dignity on campus is no longer divided by payroll tier.',
+                reflection:
+                  'When compassion and institutional reform walk together, strangers become true neighbours.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 3 OF 3 • THE BOOK ENCOUNTER',
+            title: 'Eliab Beside the Eastern Road',
+            context: 'Plato, Republic • Aristotle, NE VIII • Luke 10:25–37',
+            premise:
+              'Outside the eastern gate, robbers leave trader Eliab beaten beside the road. Two hurried citizens pass by; a traveling merchant stops, binds his wounds, pays an innkeeper, and then discovers magistrates refuse to patrol the road because only poorer farmers use it.',
+            hearClue:
+              'The merchant admits he nearly rode past to protect a lucrative afternoon sale—until he realized that after seeing Eliab, he could no longer pretend the suffering was none of his concern.',
+            searchClue:
+              'Aristotle prizes friendship of shared virtue (NE VIII), yet Luke 10:36 shifts the question from “Who qualifies as my neighbour?” to “Who became a neighbour?”—while Plato insists mercy must join public justice so roads do not stay unsafe.',
+            rulings: {
+              A: {
+                title: 'Honour schedules and leave road safety to private travellers',
+                desc: 'Accept that merchants must protect their trade and magistrates cannot police every outer road.',
+                precedent: 'Moral obligation ends where personal convenience and civic boundaries end.',
+                scores: { justice: 1, mercy: 1, community: 1 },
+                reaction:
+                  'Trade continues uninterrupted inside the walls while more farmers and pilgrims are robbed outside the eastern gate.',
+                voices: {
+                  plato: 'Plato: “Appetite for profit and fear of inconvenience have ruled the soul over justice.”',
+                  aristotle: 'Aristotle: “A city that leaves its common roads unsafe neglects the conditions of flourishing.”',
+                  jesus: 'Jesus: “You have asked who qualifies as a neighbour in order to avoid becoming one.”'
+                }
+              },
+              B: {
+                title: 'Praise individual charity while leaving the dangerous road unpatrolled',
+                desc: 'Celebrate the merchant’s private rescue as heroic, yet accept that magistrates need not fund road patrols.',
+                precedent: 'Private mercy suffices even when public structures leave others exposed.',
+                scores: { justice: 2, mercy: 4, community: 2 },
+                reaction:
+                  'Citizens applaud the merchant’s generosity at the inn while bandits strike another traveller the very next week.',
+                voices: {
+                  plato: 'Plato: “Praising an isolated act while ignoring recurring harm mistakes appearance for justice.”',
+                  aristotle: 'Aristotle: “Individual virtue needs supportive civic arrangements to sustain the common good.”',
+                  jesus: 'Jesus: “Can one show mercy to today’s victim while remaining indifferent to tomorrow’s?”'
+                }
+              },
+              C_HEAR: {
+                title: 'Cross the road in costly care & build an innkeeper relief fund',
+                desc: 'Follow the merchant’s example: bind Eliab’s wounds, cover ongoing inn care, and organize fellow traders to fund emergency aid.',
+                precedent: 'Compassion becomes real when seeing another’s pain interrupts our plans at personal cost.',
+                scores: { justice: 3, mercy: 5, community: 4 },
+                reaction:
+                  'Eliab recovers in dignity, and several merchants pool silver with the innkeeper so no injured stranger is turned away.',
+                voices: {
+                  plato: 'Plato: “Another person’s suffering became more real to him than his own advantage.”',
+                  aristotle: 'Aristotle: “Sharing the emergency fund turns a single impulse into an enduring habit.”',
+                  jesus: 'Jesus: “Go and do likewise—for mercy is measured in what it crosses.”'
+                }
+              },
+              C_SEARCH: {
+                title: 'Widen moral obligation across boundaries & compel civic road patrols',
+                desc: 'Apply Luke 10:36 and civic justice: refuse ethnic or class exclusions and require magistrates to patrol the eastern road.',
+                precedent: 'Mercy without justice leaves harmful conditions intact; justice without mercy turns cold.',
+                scores: { justice: 5, mercy: 3, community: 5 },
+                reaction:
+                  'Magistrates reluctantly fund patrols along the eastern pass after citizens challenge why safety should depend on wealth.',
+                voices: {
+                  plato: 'Plato: “A just city protects the vulnerable rather than reserving safety for the powerful.”',
+                  aristotle: 'Aristotle: “Wise laws and civic responsibility widen flourishing beyond narrow circles.”',
+                  jesus: 'Jesus: “The unexpected outsider reveals what covenant neighbour-love has always required.”'
+                }
+              },
+              C_BOTH: {
+                title: 'Embody costly Samaritan care & institute public road patrols',
+                desc: 'Integrate the merchant’s moral awakening with Luke 10:36 and civic justice: sustain Eliab’s care at the inn, pool merchant emergency support, and compel magistrates to patrol the eastern road.',
+                precedent: 'Neighbour-love crosses every boundary with personal mercy while demanding public justice for those at risk.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Eliab returns later with a jar of olive oil in gratitude, and the city accepts that the safety of every traveller is a shared trust.',
+                voices: {
+                  plato: 'Plato: “The soul sees past labels to the human being, and the city’s inscription begins to live.”',
+                  aristotle: 'Aristotle: “Personal habit and civic institution now work together for shared flourishing.”',
+                  jesus: 'Jesus: “Someone was waiting beside the road—and you became a neighbour.”'
+                }
+              }
+            }
+          }
+        ],
+        mirrorPrompt: 'When someone outside your familiar circle interrupts your schedule with a costly need, do you cross the road—or search for a reason why someone else should?',
+        mirrorOptions: [
+          'Strangers outside my familiar social, linguistic, or community circle.',
+          'People whose urgent needs arrive when I am under deadline pressure.',
+          'Vulnerable workers whose daily risks I quietly take for granted.'
+        ],
+        authorNote:
+          'Dear {reader}, thank you for crossing the road in Chapter 3. Shifting from “Who qualifies as my neighbour?” to “How can I become a neighbour?” changes the way we walk through every street. Keep reading into Chapter 4!',
+        autopsyReflection:
+          'Chapter 3 challenges boundary-drawing ethics: mercy must cross the road in person while joining hands with justice so vulnerable roads do not remain unsafe.',
+        cliffhangerTitle: 'NEXT IN CHAPTER 4 • WEALTH, POWER, AND JUSTICE',
+        cliffhangerText:
+          'Patrols now guard the eastern road—funded by Cassian, the wealthiest merchant in the city. Yet outside Cassian’s own warehouse, unpaid labourers are gathering in the dust...'
+      },
+
+      {
+        num: 4,
+        title: 'Wealth, Power, and Justice',
+        subtitle: 'Moral Responsibility in Economic and Political Life',
+        icon: 'warehouse',
+        cases: [
+          {
+            tag: 'CASE 1 OF 3 • EVERYDAY PERSONAL LIFE',
+            title: 'The Household Helper’s Sudden Medical Emergency',
+            context: 'Personal Stewardship • Private Security vs. Fair Solidarity',
+            premise:
+              'A domestic helper who has worked reliably in your home for years faces an urgent family surgery. You have been saving steadily toward a personal milestone upgrade, and paying a fair medical advance—plus paid recovery leave—will delay your plans by several months.',
+            hearClue:
+              'She hesitated to ask you because she feared losing her job if she took two weeks off to recover, and local lenders charge predatory interest.',
+            searchClue:
+              'Prosperity can create quiet insulation from how heavily our daily comfort rests on others’ labour. Wealth serves human flourishing when treated as a trust rather than a private fortress.',
+            rulings: {
+              A: {
+                title: 'Offer a small token gift and keep your savings plan untouched',
+                desc: 'Give a modest sympathy amount while keeping your financial timeline intact and docking wages for missed days.',
+                precedent: 'Personal financial milestones take priority over those who serve our household.',
+                scores: { justice: 1, mercy: 2, community: 1 },
+                reaction:
+                  'Your milestone stays on schedule, while your helper takes on high-interest debt and returns to work before healing.',
+                reflection:
+                  'Token generosity can soothe our conscience while leaving a dependent neighbour trapped in vulnerability.'
+              },
+              B: {
+                title: 'Pay the entire hospital bill without clarifying expectations',
+                desc: 'Cover every expense impulsively without discussing leave duration or clear terms.',
+                precedent: 'Unstructured generosity solves emergencies without clear boundaries.',
+                scores: { justice: 2, mercy: 4, community: 3 },
+                reaction:
+                  'The surgery succeeds, though unspoken uncertainty about repayment or work expectations creates awkward tension afterward.',
+                reflection:
+                  'Warm impulse works best when paired with respectful clarity that honours the other person’s dignity.'
+              },
+              C_HEAR: {
+                title: 'Guarantee job security, paid recovery leave & an interest-free advance',
+                desc: 'Reassure her immediately that her job is safe, grant paid recovery days, and provide a dignified, interest-free advance.',
+                precedent: 'Power in the household protects the vulnerable from fear of dismissal.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'Her fear vanishes; she recovers fully and repays the agreed portion with dignity rather than predatory debt.',
+                reflection:
+                  'Listening removes the silent fear that often keeps dependent workers from speaking honestly.'
+              },
+              C_SEARCH: {
+                title: 'Subordinate personal accumulation to mutual dependence',
+                desc: 'Delay your milestone upgrade and establish an annual health-and-leave reserve as a basic standard of fair employment.',
+                precedent: 'Resources are a means to shared flourishing, never an isolated private barn.',
+                scores: { justice: 5, mercy: 3, community: 4 },
+                reaction:
+                  'Your household budget becomes an instrument of justice rather than mere self-advancement.',
+                reflection:
+                  'When we recognize our dependence on others’ work, fair provision becomes an obligation, not a favour.'
+              },
+              C_BOTH: {
+                title: 'Protect her job with paid leave, interest-free support & a household reserve',
+                desc: 'Integrate empathetic reassurance with responsible stewardship: guarantee job security and paid recovery leave, provide an interest-free medical advance, and build an ongoing health reserve.',
+                precedent: 'Being rich toward others orders personal comfort beneath the dignity of those whose work sustains us.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Your helper heals without fear or debt, and your home reflects genuine gratitude and fairness.',
+                reflection:
+                  'Wealth finds its truest purpose when it frees others from vulnerability rather than insulating us from them.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 2 OF 3 • CIVIC & WORKPLACE DILEMMA',
+            title: 'The Rigid Relief Threshold',
+            context: 'Public Distribution • Administrative Rules vs. Equity',
+            premise:
+              'During a sharp food-price spike, you oversee a municipal relief grain program. A hardworking delivery driver is turned away at the counter because his base pay sits just 2% above the official eligibility cutoff.',
+            hearClue:
+              'The clerk’s formula counts gross pay only—ignoring that the driver is repaying his spouse’s hospital debt and feeding two orphaned nieces.',
+            searchClue:
+              'Clear rules prevent favouritism, yet rigid formulas applied without practical wisdom can exclude those in deepest need. Equity corrects the blind spots of mechanical bureaucracy.',
+            rulings: {
+              A: {
+                title: 'Enforce the 2% income cutoff without exception',
+                desc: 'Uphold administrative uniformity so no one can accuse the program of bending rules.',
+                precedent: 'Strict adherence to uniform thresholds outweighs individual hardship.',
+                scores: { justice: 2, mercy: 1, community: 2 },
+                reaction:
+                  'The ledger looks tidy on paper while a working family goes hungry despite qualifying in every real sense.',
+                reflection:
+                  'Procedural tidiness is not the same thing as justice when a rule misses real human need.'
+              },
+              B: {
+                title: 'Slip him extra sacks quietly after hours',
+                desc: 'Bypass the official register privately to help him without updating the program’s criteria.',
+                precedent: 'Informal exceptions solve hardship without reforming flawed criteria.',
+                scores: { justice: 2, mercy: 4, community: 2 },
+                reaction:
+                  'His family eats this week, yet dozens of other debt-burdened households remain excluded by the same flawed formula.',
+                reflection:
+                  'Quiet exceptions help one person while leaving systemic exclusion intact.'
+              },
+              C_HEAR: {
+                title: 'Include documented medical and dependent burdens in his assessment',
+                desc: 'Count his spouse’s hospital debt and dependent nieces so his net household reality qualifies him immediately.',
+                precedent: 'Fair judgement weighs real household burdens rather than raw income figures.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'The driver receives grain with full dignity—not as a secretive favour, but as a fair recognition of his household’s reality.',
+                reflection:
+                  'Listening to lived circumstances turns blind bureaucracy into humane equity.'
+              },
+              C_SEARCH: {
+                title: 'Institute a fast-track hardship appeal clause in the relief charter',
+                desc: 'Update the program’s public rules so net disposable income and medical emergencies trigger automatic review.',
+                precedent: 'Good institutions pair transparent rules with equitable mechanisms for correction.',
+                scores: { justice: 5, mercy: 3, community: 5 },
+                reaction:
+                  'The council adopts the hardship appeal rule, protecting transparency while preventing arbitrary exclusions.',
+                reflection:
+                  'Practical wisdom equips institutions to stay both fair and responsive.'
+              },
+              C_BOTH: {
+                title: 'Qualify his household on net hardship & codify a public appeal rule',
+                desc: 'Integrate his family’s medical reality with institutional wisdom: approve his relief grain based on net household obligations and publish a transparent hardship-review clause for all applicants.',
+                precedent: 'Justice unites transparent public rules with equitable discernment for overlooked vulnerability.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Both the driver’s household and other strained families receive fair support without compromising public accountability.',
+                reflection:
+                  'Charity and structural equity belong together so no vulnerable neighbour falls through the cracks of a rulebook.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 3 OF 3 • THE BOOK ENCOUNTER',
+            title: 'Cassian’s Warehouse & The Rich Fool',
+            context: 'Plato, Republic • Aristotle, Politics I • Luke 12:13–21',
+            premise:
+              'Wealthy merchant Cassian—whose name is carved above the city’s eastern gate—approves wage deductions on labourers after a grain shipment arrives damp, telling himself business requires tough rules. Jesus responds with the parable of the Rich Fool who builds larger barns for himself alone.',
+            hearClue:
+              'Warehouse records show the grain got wet during transport before the labourers ever touched it, and labourer Micah has been unable to buy medicine for his sick wife because of the withheld pay.',
+            searchClue:
+              'Plato warns that wealth can purchase insulation from correction (Republic). Aristotle insists acquisition is a limited means to flourishing, not an endless goal (Politics I), while Luke 12:21 warns against storing treasure for oneself without being rich toward God.',
+            rulings: {
+              A: {
+                title: 'Let the wage deductions stand to protect business authority',
+                desc: 'Back the warehouse manager’s decision and compensate later through a public festival donation.',
+                precedent: 'Commercial efficiency and managerial authority justify shifting unexplained losses onto workers.',
+                scores: { justice: 1, mercy: 1, community: 1 },
+                reaction:
+                  'Cassian dines beneath warm lamplight while Micah’s household sinks deeper into debt to buy medicine.',
+                voices: {
+                  plato: 'Plato: “Wealth has purchased insulation from examining an unjust decision.”',
+                  aristotle: 'Aristotle: “Shifting loss onto those powerless to resist is expediency, not practical wisdom.”',
+                  jesus: 'Jesus: “Larger barns built on unpaid labour leave the soul impoverished before God.”'
+                }
+              },
+              B: {
+                title: 'Pay the workers quietly but keep total managerial discretion',
+                desc: 'Settle Micah’s withheld wages as a personal favour while refusing any formal grievance process.',
+                precedent: 'Generous discretion suffices without accountable workplace procedures.',
+                scores: { justice: 2, mercy: 4, community: 2 },
+                reaction:
+                  'Micah buys medicine today, yet every worker knows his or her pay still depends solely on a manager’s mood.',
+                voices: {
+                  plato: 'Plato: “The powerful still reserve the right to define fairness unilaterally.”',
+                  aristotle: 'Aristotle: “Without reliable procedures, trust cannot take root in the enterprise.”',
+                  jesus: 'Jesus: “Charity cannot replace paying what those who worked the harvest are owed.”'
+                }
+              },
+              C_HEAR: {
+                title: 'Repay all withheld wages immediately & review past deductions',
+                desc: 'Expose the transit moisture records, pay Micah and the crew in full today, and audit earlier deductions.',
+                precedent: 'Power must verify responsibility rather than burdening those least able to object.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'Micah receives his wages the same day, though he asks quietly, “Will the same thing happen again next month?”',
+                voices: {
+                  plato: 'Plato: “Truth penetrates the self-serving story that protected profit.”',
+                  aristotle: 'Aristotle: “Fair investigation restores accountability where blame was misplaced.”',
+                  jesus: 'Jesus: “Seeing the labourer’s life restores dignity where accounting had erased it.”'
+                }
+              },
+              C_SEARCH: {
+                title: 'Order commerce toward the common good & shared voice',
+                desc: 'Apply Aristotle’s Politics and Luke 12:21: treat business profit as a subordinate trust and give workers a formal voice.',
+                precedent: 'Economic power is accountable to the human flourishing of everyone who sustains it.',
+                scores: { justice: 5, mercy: 3, community: 5 },
+                reaction:
+                  'Other merchants protest that procedures slow commerce, yet Cassian asks whether efficiency built on silence can ever be just.',
+                voices: {
+                  plato: 'Plato: “A city’s true wealth is measured by justice, not stone inscriptions above a gate.”',
+                  aristotle: 'Aristotle: “Economic relationships are human relationships that require fair governance.”',
+                  jesus: 'Jesus: “Abundance becomes blessing only when gratitude opens into shared responsibility.”'
+                }
+              },
+              C_BOTH: {
+                title: 'Repay wages, institute independent worker appeals & audit relief rules',
+                desc: 'Integrate transport records and Micah’s struggle with Aristotle and Luke 12:21: repay withheld wages, enact written independent wage-dispute reviews, and ensure grain relief counts medical debts.',
+                precedent: 'True stewardship joins immediate restitution with accountable institutions that protect the vulnerable.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Cassian looks at the eastern gate and sees not his own monument, but the quarrymen, labourers, and families who built it together.',
+                voices: {
+                  plato: 'Plato: “Wealth no longer blinds judgement; justice teaches the powerful to see.”',
+                  aristotle: 'Aristotle: “Personal integrity and institutional accountability now sustain each other.”',
+                  jesus: 'Jesus: “To be rich toward God is to order what you hold around the dignity of your neighbour.”'
+                }
+              }
+            }
+          }
+        ],
+        mirrorPrompt: 'How do your daily uses of money, authority, or influence affect the people who have the least power to challenge you?',
+        mirrorOptions: [
+          'I rarely check who absorbs the hidden cost of my convenience or savings.',
+          'I prefer giving occasional charity over changing unfair routines.',
+          'I am ready to make my decisions transparent and accountable.'
+        ],
+        authorNote:
+          'Dear {reader}, thank you for wrestling honestly with Chapter 4. Wealth and influence are never morally neutral—they either insulate us from others or become instruments of shared dignity. Step forward into Chapter 5!',
+        autopsyReflection:
+          'Chapter 4 reveals that wealth and power are never morally neutral: charity cannot excuse unfair structures, and institutions need equity when rigid rules exclude the vulnerable.',
+        cliffhangerTitle: 'NEXT IN CHAPTER 5 • THE ENEMY AT THE TABLE',
+        cliffhangerText:
+          'Cassian reforms his warehouse ledger—too late for one furious former worker named Nicanor, who is waiting outside the gate with a clenched fist...'
+      },
+
+      {
+        num: 5,
+        title: 'The Enemy at the Table',
+        subtitle: 'Forgiveness, Truth, Reconciliation, and Limits of Retaliation',
+        icon: 'table',
+        cases: [
+          {
+            tag: 'CASE 1 OF 3 • EVERYDAY PERSONAL LIFE',
+            title: 'The Public Insult in the Community Chat',
+            context: 'Interpersonal Conflict • Retaliation vs. Truthful Restraint',
+            premise:
+              'In a neighbourhood or alumni group chat, an acquaintance publicly accuses you of self-serving motives over a shared event—twisting half-truths in front of dozens of peers. You possess private screenshots that would embarrass him in return.',
+            hearClue:
+              'A mutual friend mentions that the acquaintance just lost his job this week and is lashing out under acute financial panic—though his public accusation is genuinely unfair to you.',
+            searchClue:
+              'Retaliation borrows the language of justice while binding us to our offender’s tactics. Truthful restraint refuses humiliation while still setting clear, honest facts on record.',
+            rulings: {
+              A: {
+                title: 'Post the embarrassing screenshots to crush his credibility publicly',
+                desc: 'Expose his private contradictions in the group chat so everyone sees him humiliated.',
+                precedent: 'Public insult deserves decisive public humiliation in return.',
+                scores: { justice: 2, mercy: 0, community: 0 },
+                reaction:
+                  'A few onlookers cheer your comeback, yet the group fractures into hostile camps and you feel hollow afterward.',
+                reflection:
+                  'When we imitate an offender’s cruelty to win an argument, his anger becomes the author of our character.'
+              },
+              B: {
+                title: 'Delete your response and pretend the false accusation never happened',
+                desc: 'Stay completely silent and act as though everything is fine so the group stays comfortable.',
+                precedent: 'Peace requires leaving false accusations unaddressed.',
+                scores: { justice: 1, mercy: 3, community: 2 },
+                reaction:
+                  'Surface calm returns quickly, yet several peers assume the false rumour was true and quietly step back from working with you.',
+                reflection:
+                  'False peace that silences truth leaves distortion intact and breeds quiet resentment.'
+              },
+              C_HEAR: {
+                title: 'Correct the facts calmly in public & reach out privately without hostility',
+                desc: 'State the accurate timeline briefly without attacking his character, then check in privately with awareness of his stress.',
+                precedent: 'Compassion sees a person’s pain without excusing his unfair words.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'Deprived of a fight, his anger deflates; he apologizes privately for taking his panic out on you.',
+                reflection:
+                  'Seeing the human struggle behind hostility breaks the cycle of escalation.'
+              },
+              C_SEARCH: {
+                title: 'Set a clear, non-retaliatory factual record and healthy boundary',
+                desc: 'Post a concise, respectful correction of the facts, refuse personal insults, and step back from heated debate.',
+                precedent: 'Forgiveness relinquishes revenge without surrendering truth or boundaries.',
+                scores: { justice: 4, mercy: 3, community: 4 },
+                reaction:
+                  'Thoughtful members immediately recognize the contrast between your calm truthfulness and his outburst.',
+                reflection:
+                  'Truth spoken without venom protects integrity while refusing to multiply injury.'
+              },
+              C_BOTH: {
+                title: 'Clarify the truth calmly, refuse revenge & leave space for repair',
+                desc: 'Integrate awareness of his crisis with principled restraint: correct the public record concisely without counter-humiliation, maintain healthy boundaries, and leave a door open for honest conversation.',
+                precedent: 'True strength refuses retaliation while refusing to call falsehood truth.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'The rumour dissolves without a war, and later he retracts his accusation publicly with genuine respect.',
+                reflection:
+                  'Holding truth and restraint together prevents someone else’s worst moment from dictating yours.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 2 OF 3 • CIVIC & WORKPLACE DILEMMA',
+            title: 'The Institutional Cover-Up Appeal',
+            context: 'Organizational Ethics • Accountability vs. Premature Reconciliation',
+            premise:
+              'A senior team lead is caught diverting small departmental funds. Board members urge the affected junior staff to “forgive and move on quietly” without a formal inquiry so the organization avoids public scandal.',
+            hearClue:
+              'Two junior staff members share privately that they feel pressured to sign a reconciliation letter even though the lead has repeatedly intimidated anyone who questioned expense reports.',
+            searchClue:
+              'Forgiveness is never a shield for the powerful to silence victims or bypass accountability. Reconciliation requires truth, safety, and changed structures—not forced silence.',
+            rulings: {
+              A: {
+                title: 'Require a private apology and close the file quietly',
+                desc: 'Protect institutional reputation by resolving the matter internally without formal documentation.',
+                precedent: 'Institutional peace and reputation outweigh public accountability.',
+                scores: { justice: 0, mercy: 1, community: 1 },
+                reaction:
+                  'Scandal is avoided today, yet the intimidated staff lose all trust and the pattern quietly resumes six months later.',
+                reflection:
+                  'Invoking “forgiveness” to protect power from scrutiny is a betrayal of both truth and mercy.'
+              },
+              B: {
+                title: 'Demand permanent public blacklisting with no path of restoration',
+                desc: 'Expel the lead and campaign to ensure he can never hold any livelihood again.',
+                precedent: 'A wrongdoer is permanently defined by his worst offence.',
+                scores: { justice: 3, mercy: 0, community: 1 },
+                reaction:
+                  'Accountability is enforced, yet vindictive ruin turns justice into an instrument of permanent humiliation.',
+                reflection:
+                  'Accountability protects the vulnerable, whereas vengeance delights in destroying a human being.'
+              },
+              C_HEAR: {
+                title: 'Shield junior staff from forced reconciliation & hear their testimony safely',
+                desc: 'Cancel the pressured reconciliation letter, protect whistleblowers from retaliation, and record their full account.',
+                precedent: 'Victims may never be coerced into premature trust to protect an institution’s image.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'Junior staff breathe a sigh of relief as truth is finally heard without fear of reprisal.',
+                reflection:
+                  'Authentic mercy begins by protecting those who bore the cost of wrongdoing.'
+              },
+              C_SEARCH: {
+                title: 'Separate personal forgiveness from formal audit & role removal',
+                desc: 'Initiate an independent audit, remove financial authority from the lead, and mandate full restitution.',
+                precedent: 'Forgiveness relinquishes personal vengeance; it never cancels public accountability.',
+                scores: { justice: 5, mercy: 3, community: 4 },
+                reaction:
+                  'Clear governance boundaries restore institutional integrity while keeping consequences proportionate.',
+                reflection:
+                  'Holding forgiveness and accountability distinct prevents moral language from being abused.'
+              },
+              C_BOTH: {
+                title: 'Protect staff testimony, enforce financial accountability & keep restoration honest',
+                desc: 'Integrate staff protection with principled accountability: halt forced reconciliation, conduct a transparent audit with restitution, remove financial oversight, and offer a supervised path of repentance.',
+                precedent: 'True reconciliation rests on truth, safety, and repair—never on silencing the injured.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'Staff trust is rebuilt through visible fairness, and the lead faces honest consequences without vindictive cruelty.',
+                reflection:
+                  'When truth and mercy are kept distinct yet united, both people and institutions can heal.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 3 OF 3 • THE BOOK ENCOUNTER',
+            title: 'Nicanor’s Blow at the Gate',
+            context: 'Plato, Republic • Aristotle, NE IV.5 • Matt 5:43–44; 18:23–35',
+            premise:
+              'Outside the warehouse, embittered former worker Nicanor strikes Cassian across the face; Cassian’s guards beat Nicanor after he has fallen. Supporters demand harsh punishment for Nicanor, while advisers urge Cassian to drop everything in the name of mercy.',
+            hearClue:
+              'A witness reveals Nicanor snapped after months of unheard wage complaints—and that Cassian’s guards kicked Nicanor while he lay helpless on the stones.',
+            searchClue:
+              'Plato warns that revenge dresses appetite for domination in the language of justice. Aristotle teaches measured anger aimed at repair (NE IV.5), while Jesus commands enemy-love (Matt 5:44) and warns the Unforgiving Servant against hoarding mercy (Matt 18:33).',
+            rulings: {
+              A: {
+                title: 'Demand maximum punishment for Nicanor & shield the guards',
+                desc: 'Use Cassian’s civic influence to make an example of Nicanor while overlooking the guards’ excessive force.',
+                precedent: 'Public authority must crush defiance to preserve order.',
+                scores: { justice: 1, mercy: 0, community: 0 },
+                reaction:
+                  'Nicanor is jailed while the guards go unexamined; bitter class hatred hardens across every street in the city.',
+                voices: {
+                  plato: 'Plato: “The desire to humiliate has disguised itself as the defence of public order.”',
+                  aristotle: 'Aristotle: “Punishing one wrong while ignoring earlier grievances breeds civic faction.”',
+                  jesus: 'Jesus: “You demand strict repayment while forgetting the patience you yourself have received.”'
+                }
+              },
+              B: {
+                title: 'Drop all charges immediately and declare the matter finished',
+                desc: 'Release Nicanor with a public speech of forgiveness while cancelling the inquiry into wages and guard violence.',
+                precedent: 'Forgiveness means erasing all investigation and public accountability.',
+                scores: { justice: 1, mercy: 3, community: 1 },
+                reaction:
+                  'Cassian wins applause for generosity, yet workers realize their unpaid wages and the guards’ brutality have been swept under the rug.',
+                voices: {
+                  plato: 'Plato: “Mercy used to protect reputation is another mask for self-interest.”',
+                  aristotle: 'Aristotle: “Ignoring violence and unpaid wages trains citizens to distrust the law.”',
+                  jesus: 'Jesus: “Forgiveness does not silence the truth about harm done to the vulnerable.”'
+                }
+              },
+              C_HEAR: {
+                title: 'Investigate the guards’ brutality & hear the suppressed wage claims',
+                desc: 'Refuse one-sided blame: hold the guards accountable for kicking a fallen man and open the warehouse records.',
+                precedent: 'Truthful justice examines the whole history of injury rather than only the final blow.',
+                scores: { justice: 4, mercy: 4, community: 4 },
+                reaction:
+                  'Nicanor admits his blow was wrong once he sees his original wage complaint is finally being heard honestly.',
+                voices: {
+                  plato: 'Plato: “Facing the full truth interrupts the cycle where each injury excuses another.”',
+                  aristotle: 'Aristotle: “Proportionate judgement weighs every party’s conduct without partiality.”',
+                  jesus: 'Jesus: “Truth spoken without hatred opens space for genuine repentance.”'
+                }
+              },
+              C_SEARCH: {
+                title: 'Renounce vengeance while separating forgiveness from instant trust',
+                desc: 'Apply Matt 5:44 and Matt 18:33: refuse retaliation, let the magistrate rule fairly on the assault, and rebuild trust step by step.',
+                precedent: 'Forgiveness relinquishes revenge without demanding premature trust or concealing truth.',
+                scores: { justice: 4, mercy: 4, community: 4 },
+                reaction:
+                  'Cassian tells Nicanor, “I do not want you to suffer; I want the truth established”—and neither man leaves pretending peace is effortless.',
+                voices: {
+                  plato: 'Plato: “Reason governs anger rather than letting injury dictate the soul’s future.”',
+                  aristotle: 'Aristotle: “Trust is not commanded; it is earned through consistent, truthful practice.”',
+                  jesus: 'Jesus: “Refusing to answer evil with evil breaks the chain of retaliation.”'
+                }
+              },
+              C_BOTH: {
+                title: 'Hold all parties accountable, renounce revenge & share an honest table',
+                desc: 'Integrate the full witness record with Matt 5:44 and Matt 18:33: let the magistrate judge both Nicanor’s assault and the guards’ force, audit warehouse wages, and convene workers and merchants at a truthful table.',
+                precedent: 'Enemy-love pursues truth and protection for the vulnerable without delighting in an enemy’s suffering.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'At the community meal, Nicanor owns his violence and Cassian owns the unpaid wages—no instant embrace, yet a future no longer captive to the past.',
+                voices: {
+                  plato: 'Plato: “Neither man rules through domination; both submit to truth.”',
+                  aristotle: 'Aristotle: “Fair procedures and measured restraint lay the foundation for civic cooperation.”',
+                  jesus: 'Jesus: “The enemy has not yet become a friend, yet the future is no longer required to repeat the injury.”'
+                }
+              }
+            }
+          }
+        ],
+        mirrorPrompt: 'When someone has wronged you, how can you pursue truth and accountability without letting the desire for retaliation govern your heart?',
+        mirrorOptions: [
+          'Wanting the offender to suffer humiliation before I release resentment.',
+          'Sweeping truth under the rug just to keep superficial peace.',
+          'Refusing revenge while still naming truth and healthy boundaries.'
+        ],
+        authorNote:
+          'Dear {reader}, thank you for walking through the difficult terrain of Chapter 5. Holding forgiveness together with truth, safety, and accountability is one of the hardest tasks in moral life. One final chapter awaits—step into Chapter 6!',
+        autopsyReflection:
+          'Chapter 5 guards against two twin errors: retaliation disguised as justice, and false reconciliation that silences victims to protect the powerful.',
+        cliffhangerTitle: 'NEXT IN CHAPTER 6 • THE CROSS AND THE GOOD LIFE',
+        cliffhangerText:
+          'Cassian and Nicanor sit at the same table without an embrace—just as a cry rises from the valley crossroads where an overturned cart pins a stranger beneath its frame, and the road turns toward Jerusalem...'
+      },
+
+      {
+        num: 6,
+        title: 'The Cross and the Good Life',
+        subtitle: 'Self-Giving Love, Hope, and the Distinctiveness of Christian Ethics',
+        icon: 'cross',
+        cases: [
+          {
+            tag: 'CASE 1 OF 3 • EVERYDAY PERSONAL LIFE',
+            title: 'The Burned-Out Caregiver’s Dilemma',
+            context: 'Discernment in Sacrifice • Faithful Love vs. Unhealthy Coercion',
+            premise:
+              'A close relative repeatedly demands that you cancel your health checkups, work responsibilities, and rest to manage crises he refuses to address himself—insisting that “true love always sacrifices everything without boundaries.”',
+            hearClue:
+              'When you look honestly at the pattern, your constant rescuing has shielded him from taking responsibility while leaving you exhausted and resentful.',
+            searchClue:
+              'Self-giving love is not measured by the quantity of pain endured or by letting others exploit us. Practical wisdom distinguishes faithful care from coercion disguised as virtue.',
+            rulings: {
+              A: {
+                title: 'Keep surrendering your health and duties to prove your devotion',
+                desc: 'Accept every demand without boundaries so no one can ever accuse you of selfishness.',
+                precedent: 'True love means saying yes to every demand regardless of personal harm.',
+                scores: { justice: 1, mercy: 2, community: 1 },
+                reaction:
+                  'Your health deteriorates while your relative grows more dependent and irritable.',
+                reflection:
+                  'Sacrifice driven by guilt or coercion neither heals the other person nor honours truth.'
+              },
+              B: {
+                title: 'Cut off all contact abruptly to protect your peace',
+                desc: 'Walk away completely and refuse any further support or conversation.',
+                precedent: 'Self-preservation requires severing difficult relationships altogether.',
+                scores: { justice: 2, mercy: 1, community: 1 },
+                reaction:
+                  'You regain immediate rest, yet an abrupt cutoff leaves no constructive path for genuine help.',
+                reflection:
+                  'Escaping every burden avoids exploitation, yet love still asks what constructive care looks like.'
+              },
+              C_HEAR: {
+                title: 'Name the exhaustion honestly & invite shared responsibility',
+                desc: 'Explain clearly what you can sustainably offer while refusing to cover crises he must own himself.',
+                precedent: 'Love requires truthfulness about limits so care does not become mutual harm.',
+                scores: { justice: 4, mercy: 4, community: 4 },
+                reaction:
+                  'After initial resistance, your relative begins taking concrete steps once enabling stops.',
+                reflection:
+                  'Truthful boundaries protect both the giver’s dignity and the recipient’s growth.'
+              },
+              C_SEARCH: {
+                title: 'Distinguish faithful service from coerced self-destruction',
+                desc: 'Keep your medical and work commitments intact while offering structured, scheduled support that empowers rather than enables.',
+                precedent: 'Self-giving is judged by the genuine good it serves, never by mere suffering.',
+                scores: { justice: 5, mercy: 4, community: 4 },
+                reaction:
+                  'Replacing frantic rescuing with steady, bounded support restores sanity and sustainability.',
+                reflection:
+                  'Practical wisdom rescues self-giving from becoming an excuse for exploitation.'
+              },
+              C_BOTH: {
+                title: 'Hold firm health boundaries & offer empowering, truthful care',
+                desc: 'Integrate honest self-awareness with practical wisdom: protect your health and core duties, refuse guilt-driven coercion, and offer structured support that encourages real accountability.',
+                precedent: 'Authentic self-giving serves true human flourishing—never coercion or enabling.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'You remain present in love without being destroyed—and your relative learns to stand on his own feet.',
+                reflection:
+                  'Love is faithful when it seeks the other’s real good rather than surrendering to manipulation.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 2 OF 3 • CIVIC & WORKPLACE DILEMMA',
+            title: 'The Safety Auditor’s Unpopular Report',
+            context: 'Moral Courage • Institutional Prestige vs. Public Safety',
+            premise:
+              'As lead quality auditor for a celebrated civic footbridge opening tomorrow, you uncover a weld defect that could fail under monsoon crowd loads. Senior officials warn that delaying the ribbon-cutting will humiliate leadership and cost you your promotion.',
+            hearClue:
+              'The site engineer whispers that he flagged the weak weld last week, but managers told him to paint over it so the inauguration ceremony would stay on schedule.',
+            searchClue:
+              'Institutions often confuse preserving their own reputation with serving the common good. Moral courage accepts personal cost rather than sacrificing vulnerable lives for public applause.',
+            rulings: {
+              A: {
+                title: 'Sign the clearance and schedule quiet repairs after the ceremony',
+                desc: 'Protect the inauguration and your career advancement, hoping monsoon crowds will not test the weld before repairs.',
+                precedent: 'Institutional prestige and smooth schedules justify silent risk.',
+                scores: { justice: 0, mercy: 0, community: 0 },
+                reaction:
+                  'The ribbon-cutting is celebrated on evening news while hundreds of commuters cross an unsafe span every morning.',
+                reflection:
+                  'When institutional image becomes sacred, human lives become expendable.'
+              },
+              B: {
+                title: 'Leak the raw files anonymously and resign immediately',
+                desc: 'Post internal memos online and walk away before officials can respond.',
+                precedent: 'Immediate public exposure overrides orderly corrective action.',
+                scores: { justice: 3, mercy: 3, community: 2 },
+                reaction:
+                  'Panic erupts across the city, halting the opening amid confusion over which sections are actually unsafe.',
+                reflection:
+                  'Exposure without clear technical guidance can trigger fear without solving the repair.'
+              },
+              C_HEAR: {
+                title: 'Back the site engineer & refuse to sign off until the weld is rebuilt',
+                desc: 'Stand publicly with the engineer who was silenced, placing commuter safety above promotion.',
+                precedent: 'Leadership uses its voice to shield truth-tellers and vulnerable lives.',
+                scores: { justice: 5, mercy: 5, community: 4 },
+                reaction:
+                  'Officials fume over the delayed ceremony, yet the engineer is protected and crews begin reinforcing the weld tonight.',
+                reflection:
+                  'Courageous solidarity breaks the culture of silence that puts ordinary people at risk.'
+              },
+              C_SEARCH: {
+                title: 'Issue a formal safety hold placing public life above institutional pride',
+                desc: 'Invoke statutory safety authority to postpone the opening until independent load tests pass.',
+                precedent: 'An institution’s true honour lies in protecting life, not preserving appearances.',
+                scores: { justice: 5, mercy: 4, community: 5 },
+                reaction:
+                  'Though passed over for promotion, your formal hold prevents a catastrophic collapse during the monsoon.',
+                reflection:
+                  'Choosing truth when it costs advancement reveals what we value more than applause.'
+              },
+              C_BOTH: {
+                title: 'Issue a formal safety hold, protect the engineer & oversee transparent repair',
+                desc: 'Integrate the engineer’s testimony with public duty: refuse clearance, shield him from retaliation, publish a clear repair timeline, and accept the career cost with integrity.',
+                precedent: 'Faithfulness refuses to sacrifice innocent lives on the altar of institutional reputation.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'The inauguration is delayed by two weeks, the bridge opens genuinely safe, and citizens recognize what real public leadership looks like.',
+                reflection:
+                  'Costly integrity may forfeit immediate reward, yet it preserves life and moral truth.'
+              }
+            }
+          },
+          {
+            tag: 'CASE 3 OF 3 • THE BOOK ENCOUNTER',
+            title: 'The Overturned Cart & The Servant’s Towel',
+            context: 'Plato, Republic II • Mark 8:34–35 • John 13:1–17',
+            premise:
+              'At the valley crossroads, an overturned cart pins a bleeding traveller while a merchant protests that lending his cargo cart will delay his noon market profit. That evening, Jesus kneels with a towel to wash his disciples’ feet—even the one who will betray him—before walking toward the Cross.',
+            hearClue:
+              'The merchant’s servant trembles because his master punishes any late delivery, while Peter resists having his feet washed because he cannot imagine greatness kneeling like a servant.',
+            searchClue:
+              'Plato asks whether justice remains worthy when stripped of all reward (Republic II). Jesus redefines greatness as humble service (John 13:14) and reveals on the Cross—vindicated in Resurrection—that self-giving love outlasts worldly power (Mark 8:35).',
+            rulings: {
+              A: {
+                title: 'Respect the merchant’s schedule & preserve traditional rank at table',
+                desc: 'Do not commandeer private cargo carts for roadside accidents, and keep teachers above servants’ tasks.',
+                precedent: 'Legitimate property and social rank need not be interrupted by another’s crisis.',
+                scores: { justice: 1, mercy: 0, community: 1 },
+                reaction:
+                  'The merchant reaches the market by noon while the pinned traveller bleeds beside the broken wheel.',
+                voices: {
+                  plato: 'Plato: “Advantage and status have once again been mistaken for the Good.”',
+                  aristotle: 'Aristotle: “A life closed to interruption misses the moment where character is tested.”',
+                  jesus: 'Jesus: “Whoever clings to status and advantage at any cost loses true life.”'
+                }
+              },
+              B: {
+                title: 'Glorify suffering itself as proof of moral virtue',
+                desc: 'Declare that enduring pain and loss automatically proves goodness regardless of wisdom or responsibility.',
+                precedent: 'Suffering is inherently good and should be sought for its own sake.',
+                scores: { justice: 1, mercy: 2, community: 1 },
+                reaction:
+                  'Vulnerable listeners wonder whether they must endure abuse silently to prove they love.',
+                voices: {
+                  plato: 'Plato: “Pain is not the Good; only what serves truth and justice is noble.”',
+                  aristotle: 'Aristotle: “Practical wisdom never confuses reckless harm with courage.”',
+                  jesus: 'Jesus: “The Cross exposes human cruelty; God’s love seeks life, never exploitation.”'
+                }
+              },
+              C_HEAR: {
+                title: 'Shield the servant, commandeer the cart & kneel in mutual service',
+                desc: 'Take responsibility before the merchant so the servant is not punished, carry the wounded man to care, and embrace foot-washing service.',
+                precedent: 'True authority shields those beneath it and kneels to serve without pride.',
+                scores: { justice: 4, mercy: 5, community: 4 },
+                reaction:
+                  'The merchant steps aside, the wounded man reaches the physician, and the disciples learn to receive as well as give service.',
+                voices: {
+                  plato: 'Plato: “Those who lead prove worthy only when they refuse to use power for themselves.”',
+                  aristotle: 'Aristotle: “Mutual giving and receiving bind a community in genuine friendship.”',
+                  jesus: 'Jesus: “If I, your Lord and Teacher, have washed your feet, do so for one another.”'
+                }
+              },
+              C_SEARCH: {
+                title: 'Anchor faithfulness in Cross & Resurrection hope beyond success',
+                desc: 'Stand with Plato’s just person and Jesus’ Cross: remain faithful to truth and love even when misunderstood or unrewarded.',
+                precedent: 'Resurrection hope frees disciples to love faithfully without demanding immediate worldly victory.',
+                scores: { justice: 5, mercy: 4, community: 4 },
+                reaction:
+                  'Even in the silence of Saturday, hope refuses both despair and complacency.',
+                voices: {
+                  plato: 'Plato: “Justice remains real even when stripped of every earthly applause.”',
+                  aristotle: 'Aristotle: “Integrity endures misfortune, though death itself remains a tragic limit.”',
+                  jesus: 'Jesus: “The Cross is not the final word; God vindicates self-giving love in resurrection life.”'
+                }
+              },
+              C_BOTH: {
+                title: 'Rescue the stranger, shield the servant & embody Resurrection-anchored service',
+                desc: 'Integrate the servant’s vulnerability with John 13 and Resurrection hope: use the cart to save the injured traveller while protecting the servant, reject exploitation, and lead through humble, self-giving love.',
+                precedent: 'The good life is faithful participation in God’s reign—shaped by the Servant’s towel, the Cross, and Resurrection hope.',
+                scores: { justice: 5, mercy: 5, community: 5 },
+                reaction:
+                  'In the unnamed city, the inscription on the Monument to Justice finally breathes—not as cold stone, but as a life interrupted by love.',
+                voices: {
+                  plato: 'Plato: “At last, the Good is no longer a word carved in stone, but a soul ordered toward truth.”',
+                  aristotle: 'Aristotle: “Practical wisdom, courage, and shared life converge in concrete action.”',
+                  jesus: 'Jesus: “Blessed are those who see the stranger—for in serving the least, you walk in the kingdom.”'
+                }
+              }
+            }
+          }
+        ],
+        mirrorPrompt: 'Where in your life are you tempted to protect your own comfort and reputation—and what would faithful, self-giving love ask of you instead?',
+        mirrorOptions: [
+          'In my leadership or classroom, by listening and serving without seeking status.',
+          'In my family or community, by interrupting my plans for someone in need.',
+          'By speaking up when institutional or religious language burdens the vulnerable.'
+        ],
+        authorNote:
+          'Dear {reader}, congratulations on completing all six chapters of The Good Life! You have weighed hard cases, examined your habits, and stood beneath the Monument to Justice. Open your Personal Dossier to view your complete journey and a final word of invitation.',
+        autopsyReflection:
+          'Chapter 6 brings the conversation to its theological horizon: true greatness kneels to serve, refuses to sanctify exploitation, and trusts hope beyond immediate applause.',
+        cliffhangerTitle: 'EPILOGUE UNLOCKED • THE STRANGER BENEATH THE MONUMENT',
+        cliffhangerText:
+          'Morning returns to the square. Beneath the inscription "JUSTICE IS THE FOUNDATION OF A GOOD LIFE," an elderly stranger sits cold and hungry—and a young woman stops with her basket of bread...'
+      }
+    ];
+
+    // =========================================================================
+    // PERSISTENT STATE MANAGEMENT
+    // =========================================================================
+    const STORAGE_KEY = 'the_good_life_episodic_v3';
+
+    function createDefaultChapterState() {
+      return {
+        wisdom: 20,
+        activeCaseIndex: 0,
+        cases: [
+          { heard: false, searched: false, selectedKey: null, confirmed: false, rulingCode: null, precedent: null, scores: null },
+          { heard: false, searched: false, selectedKey: null, confirmed: false, rulingCode: null, precedent: null, scores: null },
+          { heard: false, searched: false, selectedKey: null, confirmed: false, rulingCode: null, precedent: null, scores: null }
+        ],
+        mirrorChoice: null,
+        mirrorNote: '',
+        completed: false
+      };
+    }
+
+    function createInitialState() {
+      const chaptersMap = {};
+      CHAPTERS.forEach((ch) => {
+        chaptersMap[ch.num] = createDefaultChapterState();
+      });
+      return {
+        playerName: '',
+        mode: 'reader', // 'reader' | 'classroom'
+        view: 'hub', // 'hub' | 'episode' | 'autopsy' | 'ledger'
+        activeChapterNum: 1,
+        projectorLarge: false,
+        precedentRollOpen: true,
+        pendingResetType: null,
+        chapters: chaptersMap
+      };
+    }
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createInitialState();
+        const parsed = JSON.parse(raw);
+        const base = createInitialState();
+        base.playerName = typeof parsed.playerName === 'string' ? parsed.playerName : '';
+        base.mode = parsed.mode === 'classroom' ? 'classroom' : 'reader';
+        base.projectorLarge = Boolean(parsed.projectorLarge);
+        if (parsed.chapters) {
+          CHAPTERS.forEach((ch) => {
+            if (parsed.chapters[ch.num]) {
+              base.chapters[ch.num] = {
+                ...createDefaultChapterState(),
+                ...parsed.chapters[ch.num]
+              };
+            }
+          });
+        }
+        return base;
+      } catch (e) {
+        return createInitialState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    // =========================================================================
+    // HELPERS
+    // =========================================================================
+    function getDisplayName() {
+      const trimmed = (state.playerName || '').trim();
+      return trimmed.length > 0 ? trimmed : 'Reader';
+    }
+
+    function getChapter(num) {
+      return CHAPTERS.find((c) => c.num === num) || CHAPTERS[0];
+    }
+
+    function getChapterProgress(num) {
+      return state.chapters[num];
+    }
+
+    function isChapterUnlocked(num) {
+      if (state.mode === 'classroom') return true;
+      if (num === 1) return true;
+      return Boolean(state.chapters[num - 1]?.completed);
+    }
+
+    function getCompletedChapterCount() {
+      return CHAPTERS.filter((ch) => state.chapters[ch.num]?.completed).length;
+    }
+
+    function computeChapterPillarScores(ch, chProg) {
+      let justiceRaw = 0;
+      let mercyRaw = 0;
+      let communityRaw = 0;
+      let counted = 0;
+
+      ch.cases.forEach((caseDef, idx) => {
+        const cState = chProg.cases[idx];
+        if (cState && cState.confirmed) {
+          const s = cState.scores || getFallbackScores(caseDef, cState);
+          justiceRaw += s.justice;
+          mercyRaw += s.mercy;
+          communityRaw += s.community;
+          counted += 1;
+        }
+      });
+
+      const maxPossible = Math.max(5, counted * 5);
+      return {
+        justice: Math.round((justiceRaw / maxPossible) * 100),
+        mercy: Math.round((mercyRaw / maxPossible) * 100),
+        community: Math.round((communityRaw / maxPossible) * 100),
+        counted
+      };
+    }
+
+    function getFallbackScores(caseDef, cState) {
+      if (cState.rulingCode === 'A') return caseDef.rulings.A.scores;
+      if (cState.rulingCode === 'B') return caseDef.rulings.B.scores;
+      if (cState.heard && cState.searched) return caseDef.rulings.C_BOTH.scores;
+      if (cState.heard) return caseDef.rulings.C_HEAR.scores;
+      return caseDef.rulings.C_SEARCH.scores;
+    }
+
+    function computeCumulativePillarScores() {
+      let jSum = 0;
+      let mSum = 0;
+      let cSum = 0;
+      let completedChapters = 0;
+
+      CHAPTERS.forEach((ch) => {
+        const prog = state.chapters[ch.num];
+        if (prog && prog.completed) {
+          const sc = computeChapterPillarScores(ch, prog);
+          jSum += sc.justice;
+          mSum += sc.mercy;
+          cSum += sc.community;
+          completedChapters += 1;
+        }
+      });
+
+      if (completedChapters === 0) return null;
+      return {
+        justice: Math.round(jSum / completedChapters),
+        mercy: Math.round(mSum / completedChapters),
+        community: Math.round(cSum / completedChapters),
+        count: completedChapters
+      };
+    }
+
+    function getPillarDiagnostic(scores) {
+      const { justice, mercy, community } = scores;
+      const minVal = Math.min(justice, mercy, community);
+      const maxVal = Math.max(justice, mercy, community);
+
+      if (maxVal >= 85 && minVal >= 80) {
+        return 'Harmonized Moral Discernment — You balanced impartial justice, compassionate mercy, and communal trust without pitting them against each other.';
+      }
+      if (justice - mercy >= 20) {
+        return 'Justice-Weighted Posture — Your rulings prioritized truth, rules, and accountability, though vulnerable individuals carried heavier immediate costs.';
+      }
+      if (mercy - justice >= 20) {
+        return 'Mercy-Weighted Posture — Your rulings protected immediate human vulnerability with warmth, though structural accountability remained lighter.';
+      }
+      if (community - justice >= 15 || community - mercy >= 15) {
+        return 'Community-Oriented Posture — You prioritized social cohesion and shared trust, seeking peace across competing groups.';
+      }
+      return 'Measured Ethical Balance — Your decisions navigated competing claims with thoughtful restraint across accountability, care, and shared life.';
+    }
+
+    function getActiveRulingC(caseDef, cState) {
+      if (cState.heard && cState.searched) return caseDef.rulings.C_BOTH;
+      if (cState.heard) return caseDef.rulings.C_HEAR;
+      if (cState.searched) return caseDef.rulings.C_SEARCH;
+      return null;
+    }
+
+    function getRulingObject(caseDef, cState, key) {
+      if (key === 'A') return caseDef.rulings.A;
+      if (key === 'B') return caseDef.rulings.B;
+      if (key === 'C') return getActiveRulingC(caseDef, cState);
+      return null;
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toastBanner');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        el.classList.add('hidden');
+      }, 3000);
+    }
+
+    // =========================================================================
+    // USER ACTIONS
+    // =========================================================================
+    function updatePlayerName(val) {
+      state.playerName = val;
+      saveState();
+      const greetEl = document.getElementById('hubWelcomeGreeting');
+      if (greetEl) {
+        const name = getDisplayName();
+        greetEl.textContent =
+          name === 'Reader'
+            ? 'Welcome, Reader — Read a Chapter, Then Enter the Dilemma'
+            : `Welcome, ${name} — Read a Chapter, Then Enter the Dilemma`;
+      }
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      saveState();
+      render();
+    }
+
+    function toggleProjectorScale() {
+      state.projectorLarge = !state.projectorLarge;
+      saveState();
+      render();
+    }
+
+    function goToHub() {
+      cancelResetPrompt();
+      state.view = 'hub';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goToLedger() {
+      cancelResetPrompt();
+      state.view = 'ledger';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openChapter(num) {
+      if (!isChapterUnlocked(num)) return;
+      cancelResetPrompt();
+      state.activeChapterNum = num;
+      const chProg = getChapterProgress(num);
+      if (chProg.completed) {
+        state.view = 'autopsy';
+      } else {
+        state.view = 'episode';
+      }
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function promptReset(type) {
+      state.pendingResetType = type;
+      const bar = document.getElementById('resetConfirmBar');
+      const msg = document.getElementById('resetConfirmMsg');
+      msg.textContent =
+        type === 'all'
+          ? 'Reset all 6 chapters and clear your saved rulings?'
+          : `Reset Chapter ${state.activeChapterNum} back to 20T and Case 1 of 3?`;
+      bar.classList.remove('hidden');
+    }
+
+    function cancelResetPrompt() {
+      state.pendingResetType = null;
+      const bar = document.getElementById('resetConfirmBar');
+      if (bar) bar.classList.add('hidden');
+    }
+
+    function executeConfirmedReset() {
+      const type = state.pendingResetType;
+      cancelResetPrompt();
+      if (type === 'all') {
+        const preservedName = state.playerName;
+        const preservedMode = state.mode;
+        const preservedScale = state.projectorLarge;
+        state = createInitialState();
+        state.playerName = preservedName;
+        state.mode = preservedMode;
+        state.projectorLarge = preservedScale;
+        saveState();
+        showToast('All 6 chapters have been reset.');
+        render();
+      } else if (type === 'chapter') {
+        state.chapters[state.activeChapterNum] = createDefaultChapterState();
+        state.view = 'episode';
+        saveState();
+        showToast(`Chapter ${state.activeChapterNum} reset with a fresh 20T budget.`);
+        render();
+      }
+    }
+
+    function triggerHear() {
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const cState = chProg.cases[chProg.activeCaseIndex];
+      if (cState.heard || cState.confirmed || chProg.wisdom < 5) return;
+      chProg.wisdom -= 5;
+      cState.heard = true;
+      saveState();
+      render();
+    }
+
+    function triggerSearch() {
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const cState = chProg.cases[chProg.activeCaseIndex];
+      if (cState.searched || cState.confirmed || chProg.wisdom < 5) return;
+      chProg.wisdom -= 5;
+      cState.searched = true;
+      saveState();
+      render();
+    }
+
+    function selectRuling(key) {
+      const ch = getChapter(state.activeChapterNum);
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const caseDef = ch.cases[chProg.activeCaseIndex];
+      const cState = chProg.cases[chProg.activeCaseIndex];
+      if (cState.confirmed) return;
+      if (key === 'C' && !getActiveRulingC(caseDef, cState)) return;
+      cState.selectedKey = cState.selectedKey === key ? null : key;
+      saveState();
+      render();
+    }
+
+    function cancelRuling() {
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const cState = chProg.cases[chProg.activeCaseIndex];
+      cState.selectedKey = null;
+      saveState();
+      render();
+    }
+
+    function confirmRuling() {
+      const ch = getChapter(state.activeChapterNum);
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const caseDef = ch.cases[chProg.activeCaseIndex];
+      const cState = chProg.cases[chProg.activeCaseIndex];
+      if (!cState.selectedKey || cState.confirmed) return;
+
+      const chosen = getRulingObject(caseDef, cState, cState.selectedKey);
+      if (!chosen) return;
+
+      cState.confirmed = true;
+      cState.precedent = chosen.precedent;
+      cState.scores = { ...chosen.scores };
+      cState.rulingCode =
+        cState.selectedKey === 'C'
+          ? cState.heard && cState.searched
+            ? 'C★'
+            : 'C'
+          : cState.selectedKey;
+
+      saveState();
+      render();
+    }
+
+    function proceedAfterCase() {
+      const chProg = getChapterProgress(state.activeChapterNum);
+      if (chProg.activeCaseIndex < 2) {
+        chProg.activeCaseIndex += 1;
+        state.view = 'episode';
+      } else {
+        chProg.completed = true;
+        state.view = 'autopsy';
+      }
+      saveState();
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectMirrorOption(idx) {
+      const chProg = getChapterProgress(state.activeChapterNum);
+      chProg.mirrorChoice = idx;
+      saveState();
+      render();
+    }
+
+    function updateMirrorNote(val) {
+      const chProg = getChapterProgress(state.activeChapterNum);
+      chProg.mirrorNote = val;
+      saveState();
+    }
+
+    function togglePrecedentRoll() {
+      state.precedentRollOpen = !state.precedentRollOpen;
+      render();
+    }
+
+    function buildDossierText() {
+      const reader = getDisplayName();
+      const cumulative = computeCumulativePillarScores();
+      const lines = [
+        '====================================================================',
+        'THE GOOD LIFE: PLATO, ARISTOTLE, AND JESUS IN CONVERSATION',
+        'Personal Ethical Autopsy & Introspection Dossier',
+        `Participant: ${reader}`,
+        'Author: Anand S. Deshbhratar • Author, The Good Life (2026)',
+        '====================================================================',
+        ''
+      ];
+
+      if (cumulative) {
+        lines.push(`CUMULATIVE ETHICAL ALIGNMENT (${cumulative.count} Completed Chapter${cumulative.count > 1 ? 's' : ''}):`);
+        lines.push(`  JUSTICE: ${cumulative.justice}% | MERCY: ${cumulative.mercy}% | COMMUNITY: ${cumulative.community}%`);
+        lines.push('');
+      }
+
+      CHAPTERS.forEach((ch) => {
+        const prog = state.chapters[ch.num];
+        lines.push(`CHAPTER ${ch.num}: ${ch.title.toUpperCase()} (${prog.completed ? 'COMPLETED' : 'IN PROGRESS'})`);
+        lines.push(`Wisdom Remaining: ${prog.wisdom}T / 20T`);
+        if (prog.completed) {
+          const chScores = computeChapterPillarScores(ch, prog);
+          lines.push(`Chapter Scorecard: JUSTICE ${chScores.justice}% | MERCY ${chScores.mercy}% | COMMUNITY ${chScores.community}%`);
+        }
+
+        prog.cases.forEach((cState, idx) => {
+          const caseLabel = idx === 0 ? 'Personal Life' : idx === 1 ? 'Civic/Workplace' : 'Book Encounter';
+          if (cState.confirmed) {
+            lines.push(
+              `  P${idx + 1} [${caseLabel} • Ruling ${cState.rulingCode}]: "${cState.precedent}" (HEAR: ${
+                cState.heard ? 'Yes' : 'No'
+              }, SEARCH: ${cState.searched ? 'Yes' : 'No'})`
+            );
+          } else {
+            lines.push(`  P${idx + 1} [${caseLabel}]: Not yet ruled.`);
+          }
+        });
+
+        if (prog.mirrorChoice !== null && ch.mirrorOptions[prog.mirrorChoice]) {
+          lines.push(`  Mirror Check (${reader}, ${ch.mirrorPrompt.charAt(0).toLowerCase() + ch.mirrorPrompt.slice(1)}):`);
+          lines.push(`    -> ${ch.mirrorOptions[prog.mirrorChoice]}`);
+        }
+        if (prog.mirrorNote && prog.mirrorNote.trim()) {
+          lines.push(`  ${reader}'s Personal Commitment: ${prog.mirrorNote.trim()}`);
+        }
+        lines.push('');
+      });
+
+      lines.push('--------------------------------------------------------------------');
+      lines.push(`A FINAL NOTE FROM THE AUTHOR TO ${reader.toUpperCase()}:`);
+      lines.push(
+        `Thank you for journeying through The Good Life: Plato, Aristotle, and Jesus in Conversation. Philosophical clarity and moral habit matter deeply—yet the heart of Christian ethics is an invitation into the transformational reign of the Kingdom of God, where grace turns admiring the good into living it with humble, self-giving love. To continue this conversation, contact anand.deshbhratar@gmail.com.`
+      );
+
+      return lines.join('\n');
+    }
+
+    function copyDossierToClipboard() {
+      const text = buildDossierText();
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Personal Dossier copied to clipboard!');
+      } catch (e) {
+        showToast('Unable to copy automatically — please use Download.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function downloadDossierTxt() {
+      const text = buildDossierText();
+      const safeName = getDisplayName().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `the-good-life-${safeName}-dossier.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded Personal Dossier (.txt)');
+    }
+
+    // =========================================================================
+    // PERSISTENT STATUS BAR (CLEAN HUD FOCUSED ON CASE PROGRESS & 20T METER)
+    // =========================================================================
+    function renderGameStatusBar(mode) {
+      const chProg = getChapterProgress(state.activeChapterNum);
+
+      let leftBadge = 'CHAPTER HUB';
+      let tokenValue = 20;
+      const maxTokens = 20;
+
+      if (mode === 'episode') {
+        leftBadge = `CASE ${chProg.activeCaseIndex + 1} OF 3`;
+        tokenValue = chProg.wisdom;
+      } else if (mode === 'autopsy') {
+        leftBadge = `CH. ${state.activeChapterNum} AUTOPSY`;
+        tokenValue = chProg.wisdom;
+      } else if (mode === 'ledger') {
+        leftBadge = 'PERSONAL DOSSIER';
+        tokenValue = 20;
+      }
+
+      const pct = Math.max(0, Math.min(100, (tokenValue / maxTokens) * 100));
+      let barColor = 'bg-emerald-400';
+      let textColor = 'text-emerald-400';
+      if (tokenValue === 0) {
+        barColor = 'bg-red-500';
+        textColor = 'text-red-500';
+      } else if (tokenValue <= 5) {
+        barColor = 'bg-amber-400';
+        textColor = 'text-amber-400';
+      }
+
+      return `
+        <div class="pb-4 border-b border-[#26231d]">
+          <!-- Row 1: Golden Badge, CHAPTER HUB / RESTART buttons, Lightning + 20T Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 rounded-md bg-amber-500 text-obsidian font-mono font-extrabold text-xs tracking-widest uppercase">
+                ${leftBadge}
+              </span>
+              ${
+                mode !== 'hub'
+                  ? `<button onclick="goToHub()"
+                      class="px-2.5 py-1 rounded-md border border-[#26231d] bg-[#15130f] hover:border-amber-500/40 text-[#a89f91] hover:text-[#f5f2eb] font-mono text-xs uppercase tracking-wider transition">
+                      CHAPTER HUB
+                    </button>`
+                  : ''
+              }
+              ${
+                mode === 'episode' || mode === 'autopsy'
+                  ? `<button onclick="promptReset('chapter')"
+                      class="px-2.5 py-1 rounded-md border border-[#26231d] bg-[#15130f] hover:border-amber-500/40 text-[#a89f91] hover:text-[#f5f2eb] font-mono text-xs uppercase tracking-wider transition">
+                      RESTART
+                    </button>`
+                  : `<button onclick="promptReset('all')"
+                      class="px-2.5 py-1 rounded-md border border-[#26231d] bg-[#15130f] hover:border-rose-500/40 text-[#a89f91] hover:text-rose-300 font-mono text-xs uppercase tracking-wider transition">
+                      RESET ALL
+                    </button>`
+              }
+            </div>
+
+            <!-- Lightning + 20T Meter -->
+            <div class="flex items-center gap-2.5 flex-1 sm:flex-initial justify-end min-w-[165px]">
+              <span class="text-amber-400 text-sm" aria-hidden="true">⚡</span>
+              <span class="font-mono font-extrabold text-sm ${textColor}">${tokenValue}T</span>
+              <div class="w-28 sm:w-36 h-2.5 rounded-full bg-[#211e18] overflow-hidden border border-[#2c271f]">
+                <div class="h-full ${barColor} transition-all duration-500 rounded-full" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // VIEW 1: WELCOME, NAME ENTRY & CHAPTER HUB (READER MODE FIRST)
+    // =========================================================================
+    function renderHubView() {
+      const completedCount = getCompletedChapterCount();
+      const progressPct = Math.round((completedCount / CHAPTERS.length) * 100);
+      const reader = getDisplayName();
+
+      return `
+        <div class="space-y-6 animate-reveal">
+          ${renderGameStatusBar('hub')}
+
+          <!-- Welcome & Player Name Card -->
+          <section class="card-surface rounded-2xl p-5 sm:p-7 space-y-5 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-amber-500/[0.06] via-transparent to-emerald-500/[0.04] pointer-events-none"></div>
+            <div class="relative space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="px-2.5 py-1 rounded-md border border-amber-500/35 bg-amber-500/10 text-amber-400 font-mono text-[11px] font-bold uppercase tracking-widest">
+                  READER &amp; CLASSROOM COMPANION
+                </span>
+                <span class="font-mono text-xs text-emerald-400 font-bold">
+                  ${completedCount} / 6 CHAPTERS COMPLETED
+                </span>
+              </div>
+
+              <div>
+                <h1 id="hubWelcomeGreeting" class="text-xl sm:text-2xl font-extrabold text-[#f5f2eb] tracking-tight">
+                  ${
+                    reader === 'Reader'
+                      ? 'Welcome, Reader — Read a Chapter, Then Enter the Dilemma'
+                      : `Welcome, ${reader} — Read a Chapter, Then Enter the Dilemma`
+                  }
+                </h1>
+                <p class="font-serif text-sm sm:text-base text-[#cfc6b6] mt-1.5 leading-relaxed">
+                  Each chapter offers <strong class="text-[#f5f2eb]">3 focused ethical cases</strong> (Personal Life, Civic/Workplace, and Book Encounter) with <strong class="text-amber-400">20T</strong> out of <strong class="text-[#f5f2eb]">30T</strong> possible investigations, concluding in a personal <strong class="text-emerald-400">Ethical Autopsy</strong>.
+                </p>
+              </div>
+
+              <!-- Player Name Input -->
+              <div class="rounded-xl border border-[#2d281f] bg-[#100e0b] p-3.5 sm:p-4 space-y-2">
+                <label for="playerNameInput" class="block font-mono text-[11px] font-bold uppercase tracking-widest text-amber-400">
+                  YOUR NAME (FOR PERSONALIZED MIRROR CHECK &amp; AUTHOR NOTE)
+                </label>
+                <input
+                  id="playerNameInput"
+                  type="text"
+                  value="${(state.playerName || '').replace(/"/g, '&quot;')}"
+                  oninput="updatePlayerName(this.value)"
+                  placeholder="Enter your name (e.g., Arjun, Meera, Samuel)..."
+                  class="w-full rounded-lg border border-[#2c271f] bg-[#15130f] focus:border-amber-400 focus:outline-none px-3.5 py-2.5 text-sm text-[#f5f2eb] placeholder-[#6f675b]" />
+              </div>
+
+              <!-- Mode Switcher: Reader Mode (Sequential Default) vs Classroom Mode (All 6 Open) -->
+              <div class="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div class="flex items-center gap-1.5 bg-[#100e0b] p-1 rounded-xl border border-[#26231d] self-start">
+                  <button onclick="setMode('reader')"
+                    class="px-3 py-1.5 rounded-lg font-mono text-[11px] font-bold uppercase tracking-wider transition ${
+                      state.mode === 'reader'
+                        ? 'bg-amber-500 text-obsidian'
+                        : 'text-[#9b9181] hover:text-[#f5f2eb]'
+                    }">
+                    Reader Mode (Sequential)
+                  </button>
+                  <button onclick="setMode('classroom')"
+                    class="px-3 py-1.5 rounded-lg font-mono text-[11px] font-bold uppercase tracking-wider transition ${
+                      state.mode === 'classroom'
+                        ? 'bg-emerald-500 text-obsidian'
+                        : 'text-[#9b9181] hover:text-[#f5f2eb]'
+                    }">
+                    Classroom / Advanced (All 6 Open)
+                  </button>
+                </div>
+
+                <button onclick="goToLedger()"
+                  class="font-mono text-xs text-amber-400 hover:text-amber-300 underline underline-offset-4 self-start sm:self-center">
+                  View Personal Dossier →
+                </button>
+              </div>
+
+              <!-- Overall Progress Bar -->
+              <div class="w-full h-1.5 rounded-full bg-[#221f18] overflow-hidden">
+                <div class="h-full bg-emerald-400 transition-all duration-500 rounded-full" style="width: ${progressPct}%"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 6 Chapter Episode Cards -->
+          <section class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono uppercase tracking-widest-plus text-[#8f8575]">
+                SELECT CHAPTER EPISODE (3 CASES • 20T PER CHAPTER)
+              </span>
+              <span class="text-[11px] font-mono text-[#7c7467]">
+                ${state.mode === 'reader' ? 'Unlocks sequentially' : 'All chapters unlocked'}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+              ${CHAPTERS.map((ch) => {
+                const prog = getChapterProgress(ch.num);
+                const unlocked = isChapterUnlocked(ch.num);
+                const casesCompleted = prog.cases.filter((c) => c.confirmed).length;
+                const chScores = prog.completed ? computeChapterPillarScores(ch, prog) : null;
+
+                let statusBadge = '';
+                if (prog.completed) {
+                  statusBadge = `<span class="px-2.5 py-0.5 rounded-full border border-emerald-500/45 bg-emerald-500/15 font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-400">✓ AUTOPSY READY</span>`;
+                } else if (casesCompleted > 0) {
+                  statusBadge = `<span class="px-2.5 py-0.5 rounded-full border border-amber-500/45 bg-amber-500/15 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">CASE ${prog.activeCaseIndex + 1} OF 3 • ${prog.wisdom}T</span>`;
+                } else if (unlocked) {
+                  statusBadge = `<span class="px-2.5 py-0.5 rounded-full border border-amber-500/45 bg-amber-500/10 font-mono text-[10px] font-bold uppercase tracking-wider text-amber-300">READY • 20T</span>`;
+                } else {
+                  statusBadge = `<span class="px-2.5 py-0.5 rounded-full border border-[#2c271f] bg-[#110f0c] font-mono text-[10px] font-bold uppercase tracking-wider text-[#6e6659]">🔒 COMPLETE CH. ${ch.num - 1}</span>`;
+                }
+
+                return `
+                  <button onclick="openChapter(${ch.num})"
+                    ${!unlocked ? 'disabled' : ''}
+                    class="w-full text-left rounded-2xl p-4 sm:p-5 border transition-all ${
+                      prog.completed
+                        ? 'emerald-investigated hover:border-emerald-400/70'
+                        : unlocked
+                        ? 'card-surface-interactive cursor-pointer'
+                        : 'bg-[#110f0c] border-[#1f1c16] opacity-55 cursor-not-allowed'
+                    }">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="space-y-1.5">
+                        <div class="flex flex-wrap items-center gap-2">
+                          <span class="font-mono text-xs font-extrabold uppercase tracking-wider ${
+                            prog.completed ? 'text-emerald-400' : unlocked ? 'text-amber-400' : 'text-[#776f62]'
+                          }">
+                            CHAPTER ${ch.num}
+                          </span>
+                          ${statusBadge}
+                          ${
+                            chScores
+                              ? `
+                            <span class="px-2 py-0.5 rounded bg-[#101411] border border-[#26332a] font-mono text-[10px] text-[#cfd9d3]">
+                              J ${chScores.justice}% • M ${chScores.mercy}% • C ${chScores.community}%
+                            </span>
+                          `
+                              : ''
+                          }
+                        </div>
+                        <h3 class="text-base sm:text-lg font-bold text-[#f5f2eb] leading-snug">
+                          ${ch.title}
+                        </h3>
+                        <p class="text-xs sm:text-sm text-[#a89f90] leading-relaxed">
+                          ${ch.subtitle}
+                        </p>
+                      </div>
+
+                      <div class="shrink-0 mt-1 font-mono text-sm ${
+                        prog.completed ? 'text-emerald-400' : unlocked ? 'text-amber-400' : 'text-[#5c5549]'
+                      }">
+                        ${unlocked ? '→' : '🔒'}
+                      </div>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // VIEW 2: ACTIVE CASE (1 OF 3, 2 OF 3, OR 3 OF 3)
+    // =========================================================================
+    function renderEpisodeView() {
+      const ch = getChapter(state.activeChapterNum);
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const idx = chProg.activeCaseIndex;
+      const caseDef = ch.cases[idx];
+      const cState = chProg.cases[idx];
+      const rulingC = getActiveRulingC(caseDef, cState);
+      const bothIntegrated = cState.heard && cState.searched;
+      const canAfford = chProg.wisdom >= 5;
+
+      // Prior precedents inscribed in earlier cases of this chapter
+      const priorPrecedents = [];
+      for (let i = 0; i < idx; i++) {
+        if (chProg.cases[i].confirmed && chProg.cases[i].precedent) {
+          priorPrecedents.push({
+            num: i + 1,
+            code: chProg.cases[i].rulingCode,
+            text: chProg.cases[i].precedent
+          });
+        }
+      }
+
+      return `
+        <div class="space-y-5 animate-reveal">
+          ${renderGameStatusBar('episode')}
+
+          <!-- Chapter Progress Stepper (3 Cases) -->
+          <div class="grid grid-cols-3 gap-2">
+            ${[0, 1, 2]
+              .map((stepIdx) => {
+                const stepState = chProg.cases[stepIdx];
+                const isCurrent = stepIdx === idx;
+                const stepLabel = stepIdx === 0 ? '1. Personal' : stepIdx === 1 ? '2. Civic / Work' : '3. Book Text';
+                return `
+                  <div class="px-2.5 py-2 rounded-xl border text-center font-mono text-[11px] transition ${
+                    stepState.confirmed
+                      ? 'border-emerald-500/45 bg-emerald-500/10 text-emerald-400 font-bold'
+                      : isCurrent
+                      ? 'border-amber-500/60 bg-amber-500/10 text-amber-300 font-bold'
+                      : 'border-[#221f19] bg-[#12100d] text-[#6f675b]'
+                  }">
+                    ${stepState.confirmed ? '✓ ' : ''}${stepLabel}
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+
+          ${
+            priorPrecedents.length > 0
+              ? `
+            <div class="rounded-xl border border-amber-500/40 bg-[#17140e] overflow-hidden">
+              <button onclick="togglePrecedentRoll()"
+                class="w-full px-4 py-2.5 flex items-center justify-between text-left hover:bg-amber-500/[0.04] transition">
+                <span class="font-mono text-xs font-bold uppercase tracking-widest text-amber-400">
+                  CHAPTER ${ch.num} PRECEDENT ROLL (${priorPrecedents.length})
+                </span>
+                <span class="font-mono text-amber-400 text-sm">${state.precedentRollOpen ? '−' : '+'}</span>
+              </button>
+              ${
+                state.precedentRollOpen
+                  ? `<div class="px-4 pb-3 pt-1 space-y-1.5 border-t border-amber-500/15">
+                      ${priorPrecedents
+                        .map(
+                          (p) => `
+                        <div class="text-xs leading-snug">
+                          <span class="font-mono font-bold text-amber-400 mr-1.5">P${p.num} (${p.code}):</span>
+                          <span class="italic text-[#e5dec9]">“${p.text}”</span>
+                        </div>
+                      `
+                        )
+                        .join('')}
+                    </div>`
+                  : ''
+              }
+            </div>
+          `
+              : ''
+          }
+
+          <!-- CASE BRIEF CARD -->
+          <section class="card-surface rounded-2xl p-5 sm:p-6 space-y-3.5">
+            <div class="space-y-2">
+              <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-400">
+                CHAPTER ${ch.num} • ${caseDef.tag}
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-[#f5f2eb] leading-snug">
+                ${caseDef.title}
+              </h2>
+              <div class="inline-block px-3 py-1 rounded-md border border-amber-500/35 bg-amber-500/[0.07] font-mono text-xs text-amber-300">
+                ${caseDef.context}
+              </div>
+            </div>
+
+            <p class="text-sm sm:text-base text-[#e6dfd2] leading-relaxed">
+              ${caseDef.premise}
+            </p>
+          </section>
+
+          ${
+            cState.confirmed
+              ? renderCaseOutcome(ch, caseDef, cState, idx)
+              : `
+            <!-- INVESTIGATION SECTION (20T ACROSS 3 CASES = 30T MAX) -->
+            <section class="space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-mono uppercase tracking-widest-plus text-[#8d8373]">
+                  INVESTIGATE — 5T PER ACTION (${chProg.wisdom}T LEFT FOR ${3 - idx} CASE${3 - idx > 1 ? 'S' : ''})
+                </span>
+                ${
+                  chProg.wisdom === 0
+                    ? `<span class="text-[11px] font-mono font-bold text-rose-400">0T REMAINING — RULE WITH WHAT YOU KNOW</span>`
+                    : ''
+                }
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <!-- HEAR BUTTON -->
+                <div>
+                  <button onclick="triggerHear()"
+                    ${cState.heard || !canAfford ? 'disabled' : ''}
+                    class="w-full text-left p-4 rounded-xl border transition-all ${
+                      cState.heard
+                        ? 'emerald-investigated cursor-default'
+                        : canAfford
+                        ? 'card-surface-interactive cursor-pointer'
+                        : 'bg-[#12100d] border-[#221f19] opacity-50 cursor-not-allowed'
+                    }">
+                    <div class="mb-2 ${cState.heard ? 'text-emerald-400' : 'text-amber-400'}">
+                      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0" />
+                        <path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4" />
+                      </svg>
+                    </div>
+                    <div class="font-mono font-bold text-xs sm:text-sm tracking-wider uppercase ${
+                      cState.heard ? 'text-emerald-400' : 'text-[#f3efe6]'
+                    }">
+                      ${cState.heard ? '✓ HEARD' : 'HEAR (5T)'}
+                    </div>
+                  </button>
+                  ${
+                    !cState.heard && cState.searched && canAfford
+                      ? `<p class="mt-1.5 text-[11px] italic text-[#9b9181] leading-snug">+5T to combine facts &amp; principle (upgrades Ruling C)</p>`
+                      : ''
+                  }
+                </div>
+
+                <!-- SEARCH BUTTON -->
+                <div>
+                  <button onclick="triggerSearch()"
+                    ${cState.searched || !canAfford ? 'disabled' : ''}
+                    class="w-full text-left p-4 rounded-xl border transition-all ${
+                      cState.searched
+                        ? 'emerald-investigated cursor-default'
+                        : canAfford
+                        ? 'card-surface-interactive cursor-pointer'
+                        : 'bg-[#12100d] border-[#221f19] opacity-50 cursor-not-allowed'
+                    }">
+                    <div class="mb-2 ${cState.searched ? 'text-emerald-400' : 'text-amber-400'}">
+                      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                      </svg>
+                    </div>
+                    <div class="font-mono font-bold text-xs sm:text-sm tracking-wider uppercase ${
+                      cState.searched ? 'text-emerald-400' : 'text-[#f3efe6]'
+                    }">
+                      ${cState.searched ? '✓ SEARCHED' : 'SEARCH (5T)'}
+                    </div>
+                  </button>
+                  ${
+                    cState.heard && !cState.searched && canAfford
+                      ? `<p class="mt-1.5 text-[11px] italic text-[#9b9181] leading-snug">+5T to combine facts &amp; principle (upgrades Ruling C)</p>`
+                      : ''
+                  }
+                </div>
+              </div>
+
+              <!-- REVEALED CLUES -->
+              ${
+                cState.heard
+                  ? `
+                <div class="rounded-xl border border-[#2d281f] border-l-4 border-l-amber-500 bg-[#17140f] p-4 space-y-1.5 animate-reveal">
+                  <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-400">
+                    HEARD — HIDDEN HUMAN REALITY
+                  </div>
+                  <p class="text-sm sm:text-base text-[#f0eae0] leading-relaxed">
+                    ${caseDef.hearClue}
+                  </p>
+                </div>
+              `
+                  : ''
+              }
+
+              ${
+                cState.searched
+                  ? `
+                <div class="rounded-xl border border-[#22332a] border-l-4 border-l-emerald-400 bg-[#121915] p-4 space-y-1.5 animate-reveal">
+                  <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-emerald-400">
+                    ${idx === 2 ? 'SEARCHED — PLATO, ARISTOTLE & SCRIPTURE' : 'SEARCHED — ETHICAL PRINCIPLE'}
+                  </div>
+                  <p class="text-sm sm:text-base text-[#f0eae0] leading-relaxed">
+                    ${caseDef.searchClue}
+                  </p>
+                </div>
+              `
+                  : ''
+              }
+            </section>
+
+            <!-- RULINGS SECTION -->
+            <section class="space-y-3">
+              <div class="text-[11px] font-mono uppercase tracking-widest-plus text-[#8d8373]">
+                RULE — SET A PRECEDENT
+              </div>
+
+              ${['A', 'B'].map((key) => renderRulingCard(key, caseDef.rulings[key], cState, false)).join('')}
+
+              ${
+                rulingC
+                  ? renderRulingCard('C', rulingC, cState, bothIntegrated)
+                  : `
+                <div class="rounded-xl border border-[#232019] bg-[#13110d] p-4 flex items-center gap-3.5 text-[#7a7163]">
+                  <svg class="w-4 h-4 text-amber-500/60 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <p class="text-xs sm:text-sm leading-relaxed">
+                    <span class="font-mono uppercase tracking-wider text-[#8e8474]">UNEXAMINED RULING</span> — Spend 5T on HEAR or SEARCH to unlock a deeper synthesis ruling.
+                  </p>
+                </div>
+              `
+              }
+            </section>
+          `
+          }
+        </div>
+      `;
+    }
+
+    function renderRulingCard(key, rulingObj, cState, isIntegrated) {
+      const isSelected = cState.selectedKey === key;
+      return `
+        <div onclick="selectRuling('${key}')"
+          class="rounded-2xl p-5 cursor-pointer transition-all ${
+            isSelected ? 'ruling-selected' : 'card-surface-interactive'
+          }">
+          <div class="space-y-3">
+            <div class="w-7 h-7 rounded-md border border-[#363026] bg-[#1f1c16] flex items-center justify-center font-mono font-bold text-xs text-[#f3efe6]">
+              ${key}
+            </div>
+
+            <div class="space-y-1.5">
+              <h3 class="text-base sm:text-lg font-bold text-[#f7f3eb] leading-snug">
+                ${rulingObj.title}
+              </h3>
+              <p class="text-xs sm:text-sm text-[#cfc6b6] leading-relaxed">
+                ${rulingObj.desc}
+              </p>
+            </div>
+
+            <p class="text-xs sm:text-sm italic text-amber-400/95">
+              Precedent: “${rulingObj.precedent}”
+            </p>
+
+            ${
+              isIntegrated
+                ? `
+              <div class="pt-0.5">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-emerald-500/45 bg-emerald-500/10 font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+                  <span>✓ FACTS + PRINCIPLE INTEGRATED</span>
+                </span>
+              </div>
+            `
+                : ''
+            }
+
+            ${
+              isSelected
+                ? `
+              <div class="pt-3 mt-3 border-t border-dashed border-[#383126] space-y-3 animate-reveal" onclick="event.stopPropagation()">
+                <div class="text-sm font-bold text-[#f5f0e6]">Confirm this ruling?</div>
+                <div class="flex flex-col gap-2">
+                  <button onclick="confirmRuling()"
+                    class="w-full py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidian font-mono font-extrabold text-xs sm:text-sm uppercase tracking-widest-plus transition shadow-md shadow-amber-500/20">
+                    CONFIRM
+                  </button>
+                  <button onclick="cancelRuling()"
+                    class="w-full py-3 px-4 rounded-xl border border-[#2f2a20] bg-[#14120e] hover:bg-[#1c1914] text-[#9b9180] hover:text-[#f3efe6] font-mono text-xs uppercase tracking-widest-plus transition">
+                    CANCEL
+                  </button>
+                </div>
+              </div>
+            `
+                : ''
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCaseOutcome(ch, caseDef, cState, idx) {
+      const chosen = getRulingObject(caseDef, cState, cState.selectedKey);
+      const isThirdCase = idx === 2;
+
+      return `
+        <section class="card-surface rounded-2xl p-5 sm:p-6 space-y-4 animate-reveal">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-bold uppercase tracking-widest-plus text-amber-400">
+              ${isThirdCase ? 'THE CITY REACTS' : 'CONSEQUENCE AT THE GATE'}
+            </span>
+            <span class="px-2.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/35 font-mono text-[11px] font-bold text-amber-300">
+              RULING ${cState.rulingCode}
+            </span>
+          </div>
+
+          <p class="text-sm sm:text-base text-[#f2ece1] leading-relaxed">
+            ${chosen.reaction}
+          </p>
+
+          ${
+            chosen.voices
+              ? `
+            <div class="rounded-xl border border-[#2d281f] bg-[#110f0c] p-4 space-y-2">
+              <div class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                THREE VOICES IN CONVERSATION
+              </div>
+              <p class="font-serif italic text-xs sm:text-sm text-[#e6dfd2] leading-relaxed">${chosen.voices.plato}</p>
+              <p class="font-serif italic text-xs sm:text-sm text-[#e6dfd2] leading-relaxed">${chosen.voices.aristotle}</p>
+              <p class="font-serif italic text-xs sm:text-sm text-[#f5f2eb] leading-relaxed">${chosen.voices.jesus}</p>
+            </div>
+          `
+              : chosen.reflection
+              ? `
+            <div class="rounded-xl border border-[#2d281f] bg-[#110f0c] p-3.5 text-xs sm:text-sm text-[#d9d0c1] leading-relaxed">
+              <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-400 block mb-1">ETHICAL INSIGHT</span>
+              ${chosen.reflection}
+            </div>
+          `
+              : ''
+          }
+
+          <p class="text-xs sm:text-sm italic text-amber-400/95">
+            Precedent P${idx + 1} inscribed: “${chosen.precedent}”
+          </p>
+
+          <button onclick="proceedAfterCase()"
+            class="w-full py-4 px-5 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.99] text-obsidian font-mono font-extrabold text-xs sm:text-sm uppercase tracking-widest-plus transition shadow-lg shadow-amber-500/20">
+            ${
+              idx === 0
+                ? 'NEXT: CASE 2 OF 3 (CIVIC & WORKPLACE) →'
+                : idx === 1
+                ? 'NEXT: CASE 3 OF 3 (THE BOOK ENCOUNTER) →'
+                : `COMPLETE CHAPTER ${ch.num} & VIEW ETHICAL AUTOPSY →`
+            }
+          </button>
+        </section>
+      `;
+    }
+
+    // =========================================================================
+    // VIEW 3: END-OF-CHAPTER ETHICAL AUTOPSY, PERSONALIZED MIRROR & AUTHOR NOTE
+    // =========================================================================
+    function renderAutopsyView() {
+      const ch = getChapter(state.activeChapterNum);
+      const chProg = getChapterProgress(state.activeChapterNum);
+      const reader = getDisplayName();
+      const hasNextChapter = ch.num < CHAPTERS.length;
+
+      // Diagnose player's investigation & ruling pattern in this chapter
+      const hearCount = chProg.cases.filter((c) => c.heard).length;
+      const searchCount = chProg.cases.filter((c) => c.searched).length;
+      const integratedCount = chProg.cases.filter((c) => c.heard && c.searched).length;
+      const unexaminedCount = chProg.cases.filter((c) => !c.heard && !c.searched).length;
+      const spentTokens = 20 - chProg.wisdom;
+      const pillarScores = computeChapterPillarScores(ch, chProg);
+      const pillarDiagnostic = getPillarDiagnostic(pillarScores);
+
+      let autopsyTitle = 'Balanced Discernment Under Scarcity';
+      let autopsyDiagnosis = `You invested ${spentTokens}T of your 20T budget (${hearCount} HEAR, ${searchCount} SEARCH), balancing human empathy with moral principle.`;
+      if (integratedCount >= 2) {
+        autopsyTitle = 'Deep Synthesizer (Facts + Principle Integrated)';
+        autopsyDiagnosis = `You concentrated your 20T budget to achieve ${integratedCount} full integrations (HEAR + SEARCH), leaving ${
+          unexaminedCount > 0 ? `${unexaminedCount} case uninvestigated—testing how you rule when tokens run dry.` : 'no stone unturned.'
+        }`;
+      } else if (hearCount > searchCount) {
+        autopsyTitle = 'Human-First Listener (Empathy-Weighted)';
+        autopsyDiagnosis = `You prioritized HEAR (${hearCount}×) over SEARCH (${searchCount}×), tuning closely to hidden human pain while occasionally risking principle blind spots.`;
+      } else if (searchCount > hearCount) {
+        autopsyTitle = 'Principle-First Jurist (Concept-Weighted)';
+        autopsyDiagnosis = `You prioritized SEARCH (${searchCount}×) over HEAR (${hearCount}×), anchoring rulings in ethical clarity while leaving some hidden human motives unprobed.`;
+      } else if (spentTokens === 0) {
+        autopsyTitle = 'Unexamined Intuition (20T Unspent)';
+        autopsyDiagnosis =
+          'You ruled across all three cases without spending a single token on HEAR or SEARCH—relying purely on immediate instinct rather than deeper inquiry.';
+      }
+
+      return `
+        <div class="space-y-5 animate-reveal">
+          ${renderGameStatusBar('autopsy')}
+
+          <!-- 1. CHAPTER ETHICAL AUTOPSY CARD -->
+          <section class="card-surface rounded-2xl p-5 sm:p-6 space-y-5 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-amber-500/[0.06] via-transparent to-emerald-500/[0.05] pointer-events-none"></div>
+            <div class="relative space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest">
+                  ✓ CHAPTER ${ch.num} ETHICAL AUTOPSY
+                </span>
+                <span class="font-mono text-xs text-[#9b9181]">
+                  SPENT ${spentTokens}T / 20T
+                </span>
+              </div>
+
+              <div>
+                <div class="font-mono text-[11px] uppercase tracking-widest text-amber-400">
+                  ${reader}’s Moral Posture in Chapter ${ch.num}
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-[#f5f2eb] mt-1">
+                  ${autopsyTitle}
+                </h2>
+                <p class="text-xs sm:text-sm text-[#d6cec0] mt-2 leading-relaxed">
+                  ${autopsyDiagnosis}
+                </p>
+              </div>
+
+              <!-- 3-PARAMETER CHAPTER SCORECARD: JUSTICE • MERCY • COMMUNITY -->
+              <div class="rounded-xl border border-[#2d281f] bg-[#100e0b] p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                    CHAPTER ${ch.num} ETHICAL ALIGNMENT SCORECARD
+                  </span>
+                  <span class="font-mono text-[10px] text-[#8f877a]">Based on Your 3 Rulings</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2.5">
+                  <div class="rounded-lg border border-amber-500/35 bg-[#15120d] p-2.5 text-center space-y-1.5">
+                    <div class="font-mono text-[10px] font-bold tracking-widest text-amber-400">JUSTICE</div>
+                    <div class="font-mono text-lg sm:text-xl font-extrabold text-[#f5f2eb]">${pillarScores.justice}%</div>
+                    <div class="w-full h-1.5 rounded-full bg-[#242019] overflow-hidden">
+                      <div class="h-full bg-amber-400 rounded-full transition-all duration-500" style="width: ${pillarScores.justice}%"></div>
+                    </div>
+                  </div>
+
+                  <div class="rounded-lg border border-emerald-500/35 bg-[#101713] p-2.5 text-center space-y-1.5">
+                    <div class="font-mono text-[10px] font-bold tracking-widest text-emerald-400">MERCY</div>
+                    <div class="font-mono text-lg sm:text-xl font-extrabold text-[#f5f2eb]">${pillarScores.mercy}%</div>
+                    <div class="w-full h-1.5 rounded-full bg-[#242019] overflow-hidden">
+                      <div class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: ${pillarScores.mercy}%"></div>
+                    </div>
+                  </div>
+
+                  <div class="rounded-lg border border-sky-500/35 bg-[#101519] p-2.5 text-center space-y-1.5">
+                    <div class="font-mono text-[10px] font-bold tracking-widest text-sky-400">COMMUNITY</div>
+                    <div class="font-mono text-lg sm:text-xl font-extrabold text-[#f5f2eb]">${pillarScores.community}%</div>
+                    <div class="w-full h-1.5 rounded-full bg-[#242019] overflow-hidden">
+                      <div class="h-full bg-sky-400 rounded-full transition-all duration-500" style="width: ${pillarScores.community}%"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="text-xs text-[#cfc6b6] leading-relaxed pt-1 border-t border-[#221e17]">
+                  ${pillarDiagnostic}
+                </p>
+              </div>
+
+              <!-- 3 Inscribed Precedents Summary -->
+              <div class="space-y-2 pt-1">
+                <div class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8f8575]">
+                  YOUR 3 INSCRIBED PRECEDENTS IN CHAPTER ${ch.num}
+                </div>
+                ${chProg.cases
+                  .map((cState, idx) => {
+                    const label = idx === 0 ? 'Personal Life' : idx === 1 ? 'Civic / Workplace' : 'Book Encounter';
+                    const badge =
+                      cState.heard && cState.searched
+                        ? 'HEAR + SEARCH'
+                        : cState.heard
+                        ? 'HEAR ONLY'
+                        : cState.searched
+                        ? 'SEARCH ONLY'
+                        : 'UNEXAMINED';
+                    return `
+                      <div class="rounded-xl border border-[#26231d] bg-[#110f0c] p-3 text-xs space-y-1">
+                        <div class="flex items-center justify-between font-mono text-[10px]">
+                          <span class="text-amber-400 font-bold">P${idx + 1} • ${label} (Ruling ${cState.rulingCode})</span>
+                          <span class="text-[#8f8575]">${badge}</span>
+                        </div>
+                        <p class="font-serif italic text-xs sm:text-sm text-[#f2ece1]">“${cState.precedent}”</p>
+                      </div>
+                    `;
+                  })
+                  .join('')}
+              </div>
+
+              <div class="rounded-xl border border-[#29241c] bg-[#12100c] p-3.5 text-xs sm:text-sm text-[#cfc6b6] leading-relaxed">
+                <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400 block mb-1">
+                  CHAPTER CORE TAKEAWAY
+                </span>
+                ${ch.autopsyReflection}
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. MIRROR CHECK ADDRESSED TO [PLAYER NAME] -->
+          <section class="rounded-2xl border border-emerald-500/40 bg-[#111713] p-5 sm:p-6 space-y-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-mono text-xs font-bold uppercase tracking-widest-plus text-emerald-400">
+                MIRROR CHECK
+              </span>
+              <span class="text-[10px] font-mono text-emerald-300/75">Auto-saved</span>
+            </div>
+
+            <p class="font-serif italic text-sm sm:text-base text-[#f5f2eb] leading-relaxed">
+              “${reader}, ${ch.mirrorPrompt.charAt(0).toLowerCase() + ch.mirrorPrompt.slice(1)}”
+            </p>
+
+            <div class="space-y-2">
+              ${ch.mirrorOptions
+                .map((opt, idx) => {
+                  const selected = chProg.mirrorChoice === idx;
+                  return `
+                    <button onclick="selectMirrorOption(${idx})"
+                      class="w-full text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition flex items-center gap-3 ${
+                        selected
+                          ? 'border-emerald-400 bg-emerald-500/15 text-[#f5f2eb] font-medium'
+                          : 'border-[#24322a] bg-[#0d130f] hover:border-emerald-500/40 text-[#c9d5ce]'
+                      }">
+                      <span class="w-4 h-4 rounded-full border flex items-center justify-center shrink-0 text-[10px] font-bold ${
+                        selected ? 'border-emerald-400 bg-emerald-400 text-obsidian' : 'border-[#455c4f]'
+                      }">
+                        ${selected ? '✓' : ''}
+                      </span>
+                      <span>${opt}</span>
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+
+            <div class="pt-1">
+              <label for="mirrorInput_${ch.num}" class="sr-only">Personal note for ${reader}</label>
+              <input
+                id="mirrorInput_${ch.num}"
+                type="text"
+                value="${(chProg.mirrorNote || '').replace(/"/g, '&quot;')}"
+                oninput="updateMirrorNote(this.value)"
+                placeholder="${reader}, write a 1-sentence personal commitment or takeaway here..."
+                class="w-full rounded-xl border border-[#24322a] bg-[#0c110e] focus:border-emerald-400 focus:outline-none px-3.5 py-2.5 text-xs sm:text-sm text-[#f5f2eb] placeholder-[#68786f]" />
+            </div>
+          </section>
+
+          <!-- 3. PERSONAL THANK-YOU NOTE FROM THE AUTHOR -->
+          <section class="rounded-2xl border border-[#2f2a20] bg-[#14120e] p-5 sm:p-6 space-y-2.5">
+            <div class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+              A PERSONAL NOTE FROM THE AUTHOR
+            </div>
+            <p class="font-serif italic text-sm sm:text-base text-[#ebe5d8] leading-relaxed">
+              “${ch.authorNote ? ch.authorNote.replace(/\{reader\}/g, reader) : `Dear ${reader}, thank you for walking thoughtfully through Chapter ${ch.num} and allowing these ethical questions to examine your own habits, loves, and responsibilities. Keep reading and testing your discernment in the next chapter!`}”
+            </p>
+            <div class="pt-1 text-xs">
+              <span class="font-bold text-[#f5f2eb]">Anand S. Deshbhratar</span>
+              <span class="text-[#9c9282]"> • Author, The Good Life (2026)</span>
+            </div>
+          </section>
+
+          <!-- 4. NEXT CHAPTER CLIFFHANGER HOOK & RESET 20T PROGRESSION -->
+          <section class="rounded-2xl border border-amber-500/45 bg-gradient-to-br from-[#1b160f] to-[#12100c] p-5 sm:p-6 space-y-4">
+            <div class="space-y-2">
+              <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-400">
+                ✦ ${ch.cliffhangerTitle}
+              </div>
+              <p class="font-serif italic text-sm sm:text-base text-[#f5f2eb] leading-relaxed">
+                ${ch.cliffhangerText}
+              </p>
+            </div>
+
+            ${
+              hasNextChapter
+                ? `
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button onclick="openChapter(${ch.num + 1})"
+                  class="py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.99] text-obsidian font-mono font-extrabold text-xs uppercase tracking-widest-plus transition shadow-lg shadow-amber-500/20">
+                  PROCEED TO CHAPTER ${ch.num + 1} (RESET 20T) →
+                </button>
+                <button onclick="goToHub()"
+                  class="py-3.5 px-4 rounded-xl border border-[#26231d] bg-[#15130f] hover:border-amber-500/40 text-[#d5cec2] font-mono font-bold text-xs uppercase tracking-widest-plus transition">
+                  RETURN TO CHAPTER HUB
+                </button>
+              </div>
+            `
+                : `
+              <button onclick="goToLedger()"
+                class="w-full py-4 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-obsidian font-mono font-extrabold text-xs sm:text-sm uppercase tracking-widest-plus transition shadow-lg shadow-emerald-500/20">
+                COMPLETE BOOK JOURNEY &amp; OPEN PERSONAL DOSSIER →
+              </button>
+            `
+            }
+          </section>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // VIEW 4: COMPLETE PERSONAL DOSSIER & AUTHOR THANK YOU
+    // =========================================================================
+    function renderLedgerView() {
+      const completedCount = getCompletedChapterCount();
+      const reader = getDisplayName();
+      const cumulative = computeCumulativePillarScores();
+
+      return `
+        <div class="space-y-6 animate-reveal">
+          ${renderGameStatusBar('ledger')}
+
+          <!-- Epilogue & Author Gratitude Card -->
+          <section class="card-surface rounded-2xl p-6 space-y-4 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.06] via-transparent to-amber-500/[0.06] pointer-events-none"></div>
+            <div class="relative space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-mono text-[11px] font-bold uppercase tracking-widest">
+                  EPILOGUE • ${completedCount} OF 6 CHAPTERS COMPLETED
+                </span>
+                <button onclick="goToHub()" class="font-mono text-xs text-amber-400 hover:underline">
+                  ← Chapter Hub
+                </button>
+              </div>
+
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-[#f5f2eb]">
+                ${reader}’s Journey Beneath the Monument
+              </h2>
+
+              ${
+                cumulative
+                  ? `
+                <div class="rounded-xl border border-[#2d281f] bg-[#100e0b] p-4 space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                      CUMULATIVE ETHICAL ALIGNMENT (${cumulative.count} CHAPTER${cumulative.count > 1 ? 'S' : ''})
+                    </span>
+                    <span class="font-mono text-[10px] text-[#8f877a]">Average Across Completed Chapters</span>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2.5">
+                    <div class="rounded-lg border border-amber-500/35 bg-[#15120d] p-2.5 text-center space-y-1">
+                      <div class="font-mono text-[10px] font-bold tracking-widest text-amber-400">JUSTICE</div>
+                      <div class="font-mono text-lg font-extrabold text-[#f5f2eb]">${cumulative.justice}%</div>
+                      <div class="w-full h-1.5 rounded-full bg-[#242019] overflow-hidden">
+                        <div class="h-full bg-amber-400 rounded-full" style="width: ${cumulative.justice}%"></div>
+                      </div>
+                    </div>
+                    <div class="rounded-lg border border-emerald-500/35 bg-[#101713] p-2.5 text-center space-y-1">
+                      <div class="font-mono text-[10px] font-bold tracking-widest text-emerald-400">MERCY</div>
+                      <div class="font-mono text-lg font-extrabold text-[#f5f2eb]">${cumulative.mercy}%</div>
+                      <div class="w-full h-1.5 rounded-full bg-[#242019] overflow-hidden">
+                        <div class="h-full bg-emerald-400 rounded-full" style="width: ${cumulative.mercy}%"></div>
+                      </div>
+                    </div>
+                    <div class="rounded-lg border border-sky-500/35 bg-[#101519] p-2.5 text-center space-y-1">
+                      <div class="font-mono text-[10px] font-bold tracking-widest text-sky-400">COMMUNITY</div>
+                      <div class="font-mono text-lg font-extrabold text-[#f5f2eb]">${cumulative.community}%</div>
+                      <div class="w-full h-1.5 rounded-full bg-[#242019] overflow-hidden">
+                        <div class="h-full bg-sky-400 rounded-full" style="width: ${cumulative.community}%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `
+                  : ''
+              }
+
+              <p class="font-serif italic text-sm sm:text-base text-[#e4ddd0] leading-relaxed">
+                “Beneath the monument, someone had seen a stranger. The good had become visible again—not as a word carved into stone, nor as an ideal safely admired from a distance, but as a life interrupted by the need of another.”
+              </p>
+
+              <!-- Signed Thank-You Message from the Author -->
+              <div class="rounded-xl border border-amber-500/35 bg-[#110f0c] p-4 sm:p-5 space-y-2.5">
+                <div class="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                  A FINAL INVITATION INTO TRANSFORMATIONAL KINGDOM ETHICS
+                </div>
+                <p class="font-serif text-sm sm:text-base text-[#f5f2eb] leading-relaxed">
+                  “Dear <strong>${reader}</strong>, thank you for journeying through <em>The Good Life: Plato, Aristotle, and Jesus in Conversation</em>. Philosophical clarity and moral habit matter deeply—yet the heart of Christian ethics is an invitation into the transformational reign of the Kingdom of God, where grace turns admiring the good into living it with humble, self-giving love. If you would like to continue this conversation, write to me at <a href="mailto:anand.deshbhratar@gmail.com" class="font-mono text-xs sm:text-sm text-amber-400 underline hover:text-amber-300">anand.deshbhratar@gmail.com</a>.”
+                </p>
+                <div class="pt-1 text-xs text-[#a89f91]">
+                  — <strong class="text-[#f5f2eb]">Anand S. Deshbhratar</strong> • Author, The Good Life (2026)
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <button onclick="copyDossierToClipboard()"
+                  class="py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian font-mono font-extrabold text-xs uppercase tracking-widest-plus transition">
+                  COPY DOSSIER TO CLIPBOARD
+                </button>
+                <button onclick="downloadDossierTxt()"
+                  class="py-3.5 px-4 rounded-xl border border-emerald-500/45 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs uppercase tracking-widest-plus transition">
+                  DOWNLOAD DOSSIER (.TXT)
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Chapter-by-Chapter Summary -->
+          <section class="space-y-3">
+            ${CHAPTERS.map((ch) => {
+              const prog = state.chapters[ch.num];
+              const hasAny = prog && prog.cases.some((c) => c.confirmed);
+              const chScores = prog && prog.completed ? computeChapterPillarScores(ch, prog) : null;
+              return `
+                <div class="card-surface rounded-2xl p-4 sm:p-5 space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="font-mono text-xs font-bold uppercase tracking-wider ${
+                        prog?.completed ? 'text-emerald-400' : 'text-amber-400'
+                      }">
+                        CHAPTER ${ch.num} • ${ch.title}
+                      </span>
+                      ${
+                        chScores
+                          ? `
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 font-mono text-[10px] font-bold text-amber-400">
+                          J ${chScores.justice}%
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 font-mono text-[10px] font-bold text-emerald-400">
+                          M ${chScores.mercy}%
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 font-mono text-[10px] font-bold text-sky-400">
+                          C ${chScores.community}%
+                        </span>
+                      `
+                          : ''
+                      }
+                    </div>
+                    <button onclick="openChapter(${ch.num})" class="font-mono text-[11px] text-amber-400 hover:underline">
+                      ${prog?.completed ? 'View Ethical Autopsy →' : 'Play Chapter →'}
+                    </button>
+                  </div>
+
+                  ${
+                    hasAny
+                      ? `
+                    <div class="space-y-2">
+                      ${prog.cases
+                        .map((c, idx) => {
+                          if (!c.confirmed) return '';
+                          const label = idx === 0 ? 'Personal' : idx === 1 ? 'Civic / Work' : 'Book Text';
+                          return `
+                            <div class="rounded-xl border border-[#26231d] bg-[#110f0c] p-3 text-xs space-y-1">
+                              <div class="font-mono text-[10px] text-amber-400 font-bold">
+                                P${idx + 1} (${label} • Ruling ${c.rulingCode})
+                              </div>
+                              <div class="font-serif italic text-xs sm:text-sm text-[#f5f2eb]">“${c.precedent}”</div>
+                            </div>
+                          `;
+                        })
+                        .join('')}
+                    </div>
+                    ${
+                      prog.mirrorChoice !== null || (prog.mirrorNote && prog.mirrorNote.trim())
+                        ? `
+                      <div class="rounded-xl border border-emerald-500/25 bg-[#0f1512] p-3 text-xs space-y-1">
+                        <div class="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                          MIRROR CHECK
+                        </div>
+                        ${
+                          prog.mirrorChoice !== null && ch.mirrorOptions[prog.mirrorChoice]
+                            ? `<p class="text-[#d4dfd9]">• ${ch.mirrorOptions[prog.mirrorChoice]}</p>`
+                            : ''
+                        }
+                        ${
+                          prog.mirrorNote && prog.mirrorNote.trim()
+                            ? `<p class="font-serif italic text-[#f5f2eb]">“${prog.mirrorNote.trim()}”</p>`
+                            : ''
+                        }
+                      </div>
+                    `
+                        : ''
+                    }
+                  `
+                      : `<p class="text-xs text-[#7c7467]">Not yet played.</p>`
+                  }
+                </div>
+              `;
+            }).join('')}
+          </section>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // MASTER RENDER
+    // =========================================================================
+    function render() {
+      const app = document.getElementById('appContainer');
+      const label = document.getElementById('projectorLabel');
+      if (state.projectorLarge) {
+        app.classList.remove('max-w-2xl');
+        app.classList.add('max-w-3xl', 'text-lg');
+        if (label) label.textContent = 'Large';
+      } else {
+        app.classList.remove('max-w-3xl', 'text-lg');
+        app.classList.add('max-w-2xl');
+        if (label) label.textContent = 'Standard';
+      }
+
+      if (state.view === 'hub') {
+        app.innerHTML = renderHubView();
+      } else if (state.view === 'episode') {
+        app.innerHTML = renderEpisodeView();
+      } else if (state.view === 'autopsy') {
+        app.innerHTML = renderAutopsyView();
+      } else if (state.view === 'ledger') {
+        app.innerHTML = renderLedgerView();
+      }
+    }
+
+    window.onload = function () {
+      render();
+    };
+  </script>
+</body>
+</html>
