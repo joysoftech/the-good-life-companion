@@ -25,5 +25,9 @@ Take your time. Sit at the gate, weigh the competing claims, and discover not on
 
 — Anand S. Deshbhratar
 
+Book: The Good Life
+
+Deshbhratar, Anand S. The Good Life: Plato, Aristotle, and Jesus in Conversation. Bengaluru:Integra Academic, 2026. (ISBN: 978-93-346-2249-2)
+
 See the attached file:
 [Beyond the Page.pdf](https://github.com/user-attachments/files/35397724/Beyond.the.Page.pdf)
