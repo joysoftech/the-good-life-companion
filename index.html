@@ -1768,6 +1768,10 @@
     }
 
     function goToLedger() {
+      if (getCompletedChapterCount() < 1) {
+        showToast('Complete at least 1 Chapter Ethical Autopsy to unlock your Personal Dossier.');
+        return;
+      }
       cancelResetPrompt();
       state.view = 'ledger';
       render();
@@ -2163,10 +2167,17 @@
                   </button>
                 </div>
 
-                <button onclick="goToLedger()"
-                  class="font-mono text-xs text-amber-400 hover:text-amber-300 underline underline-offset-4 self-start sm:self-center">
-                  View Personal Dossier →
-                </button>
+                ${
+                  completedCount >= 1
+                    ? `<button onclick="goToLedger()"
+                        class="font-mono text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-4 self-start sm:self-center">
+                        ✓ View Personal Dossier (${completedCount}/6) →
+                      </button>`
+                    : `<span title="Complete at least 1 Chapter Ethical Autopsy to unlock"
+                        class="font-mono text-xs text-[#6e6659] cursor-not-allowed self-start sm:self-center select-none">
+                        🔒 Personal Dossier (Complete 1 Chapter to Unlock)
+                      </span>`
+                }
               </div>
 
               <!-- Overall Progress Bar -->
